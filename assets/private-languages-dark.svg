@@ -1,57 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="329" viewBox="0 0 640 329" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="235" viewBox="0 0 840 235" role="img" aria-labelledby="title description">
 <title id="title">Private repository languages</title>
 <desc id="description">Language shares across owned private repositories, weighted by code bytes. Forked and archived repositories are included.</desc>
 <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif">
 <text x="20" y="27" fill="#f0f6fc" font-size="17" font-weight="600">Languages</text>
-<defs><clipPath id="bar"><rect x="20" y="43" width="600" height="9" rx="4.5"/></clipPath></defs>
-<rect x="20" y="43" width="600" height="9" rx="4.5" fill="#21262d"/>
+<defs><clipPath id="bar"><rect x="20" y="43" width="800" height="9" rx="4.5"/></clipPath></defs>
+<rect x="20" y="43" width="800" height="9" rx="4.5" fill="#21262d"/>
 <g clip-path="url(#bar)">
-<rect x="20.000000" y="43" width="198.324294" height="9" fill="#7355dd"/>
-<rect x="218.324294" y="43" width="107.532082" height="9" fill="#3178c6"/>
-<rect x="325.856376" y="43" width="84.396869" height="9" fill="#f1e05a"/>
-<rect x="410.253245" y="43" width="45.978603" height="9" fill="#e34c26"/>
-<rect x="456.231848" y="43" width="35.709903" height="9" fill="#0060ac"/>
-<rect x="491.941751" y="43" width="29.954120" height="9" fill="#3572A5"/>
-<rect x="521.895871" y="43" width="27.100739" height="9" fill="#f34b7d"/>
-<rect x="548.996610" y="43" width="26.399393" height="9" fill="#663399"/>
-<rect x="575.396004" y="43" width="20.450594" height="9" fill="#000080"/>
-<rect x="595.846598" y="43" width="16.397751" height="9" fill="#b07219"/>
-<rect x="612.244348" y="43" width="3.929527" height="9" fill="#012456"/>
-<rect x="616.173875" y="43" width="1.773917" height="9" fill="#aace60"/>
-<rect x="617.947792" y="43" width="1.416733" height="9" fill="#555555"/>
-<rect x="619.364525" y="43" width="0.581348" height="9" fill="#DA3434"/>
-<rect x="619.945874" y="43" width="0.054126" height="9" fill="#C1F12E"/>
+<rect x="20.000000" y="43" width="189.074748" height="9" fill="#64A8EC"/>
+<rect x="209.074748" y="43" width="143.986577" height="9" fill="#E8C96D"/>
+<rect x="353.061325" y="43" width="106.948888" height="9" fill="#9B8AFB"/>
+<rect x="460.010213" y="43" width="79.627621" height="9" fill="#E9957A"/>
+<rect x="539.637834" y="43" width="62.789083" height="9" fill="#65BFB0"/>
+<rect x="602.426917" y="43" width="52.668633" height="9" fill="#78BBD3"/>
+<rect x="655.095550" y="43" width="47.651503" height="9" fill="#E38EB2"/>
+<rect x="702.747053" y="43" width="41.316794" height="9" fill="#BC96DF"/>
+<rect x="744.063848" y="43" width="35.958486" height="9" fill="#909CE4"/>
+<rect x="780.022334" y="43" width="28.832331" height="9" fill="#D6AC76"/>
+<rect x="808.854665" y="43" width="4.417821" height="9" fill="#8EAAC8"/>
+<rect x="813.272486" y="43" width="3.119096" height="9" fill="#A5C589"/>
+<rect x="816.391582" y="43" width="2.491057" height="9" fill="#9CA8B8"/>
+<rect x="818.882638" y="43" width="1.022191" height="9" fill="#CE8492"/>
+<rect x="819.904829" y="43" width="0.095171" height="9" fill="#C1D58B"/>
 </g>
-<circle cx="25" cy="76" r="5" fill="#7355dd"/>
-<text x="39" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C#</tspan><tspan fill="#9198a1" dx="8">33.1%</tspan></text>
-<circle cx="335" cy="76" r="5" fill="#3178c6"/>
-<text x="349" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">TypeScript</tspan><tspan fill="#9198a1" dx="8">17.9%</tspan></text>
-<circle cx="25" cy="104" r="5" fill="#f1e05a"/>
-<text x="39" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">JavaScript</tspan><tspan fill="#9198a1" dx="8">14.1%</tspan></text>
-<circle cx="335" cy="104" r="5" fill="#e34c26"/>
-<text x="349" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">HTML</tspan><tspan fill="#9198a1" dx="8">7.7%</tspan></text>
-<circle cx="25" cy="132" r="5" fill="#0060ac"/>
-<text x="39" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">XML</tspan><tspan fill="#9198a1" dx="8">6.0%</tspan></text>
-<circle cx="335" cy="132" r="5" fill="#3572A5"/>
-<text x="349" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Python</tspan><tspan fill="#9198a1" dx="8">5.0%</tspan></text>
-<circle cx="25" cy="160" r="5" fill="#f34b7d"/>
-<text x="39" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C++</tspan><tspan fill="#9198a1" dx="8">4.5%</tspan></text>
-<circle cx="335" cy="160" r="5" fill="#663399"/>
-<text x="349" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">CSS</tspan><tspan fill="#9198a1" dx="8">4.4%</tspan></text>
-<circle cx="25" cy="188" r="5" fill="#000080"/>
-<text x="39" y="192" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Lua</tspan><tspan fill="#9198a1" dx="8">3.4%</tspan></text>
-<circle cx="335" cy="188" r="5" fill="#b07219"/>
-<text x="349" y="192" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Java</tspan><tspan fill="#9198a1" dx="8">2.7%</tspan></text>
-<circle cx="25" cy="216" r="5" fill="#012456"/>
-<text x="39" y="220" font-size="14"><tspan fill="#f0f6fc" font-weight="600">PowerShell</tspan><tspan fill="#9198a1" dx="8">0.7%</tspan></text>
-<circle cx="335" cy="216" r="5" fill="#aace60"/>
-<text x="349" y="220" font-size="14"><tspan fill="#f0f6fc" font-weight="600">HLSL</tspan><tspan fill="#9198a1" dx="8">0.3%</tspan></text>
-<circle cx="25" cy="244" r="5" fill="#555555"/>
-<text x="39" y="248" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C</tspan><tspan fill="#9198a1" dx="8">0.2%</tspan></text>
-<circle cx="335" cy="244" r="5" fill="#DA3434"/>
-<text x="349" y="248" font-size="14"><tspan fill="#f0f6fc" font-weight="600">CMake</tspan><tspan fill="#9198a1" dx="8">&lt;0.1%</tspan></text>
-<circle cx="25" cy="272" r="5" fill="#C1F12E"/>
-<text x="39" y="276" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Batchfile</tspan><tspan fill="#9198a1" dx="8">&lt;0.1%</tspan></text>
-<text x="20" y="314" font-size="12" fill="#9198a1">Private repositories · code size</text>
+<circle cx="25.000" cy="76" r="5" fill="#64A8EC"/>
+<text x="39.000" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">TypeScript</tspan><tspan fill="#9198a1" dx="8">23.6%</tspan></text>
+<circle cx="291.667" cy="76" r="5" fill="#E8C96D"/>
+<text x="305.667" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">JavaScript</tspan><tspan fill="#9198a1" dx="8">18.0%</tspan></text>
+<circle cx="558.333" cy="76" r="5" fill="#9B8AFB"/>
+<text x="572.333" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C#</tspan><tspan fill="#9198a1" dx="8">13.4%</tspan></text>
+<circle cx="25.000" cy="104" r="5" fill="#E9957A"/>
+<text x="39.000" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">HTML</tspan><tspan fill="#9198a1" dx="8">10.0%</tspan></text>
+<circle cx="291.667" cy="104" r="5" fill="#65BFB0"/>
+<text x="305.667" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">XML</tspan><tspan fill="#9198a1" dx="8">7.8%</tspan></text>
+<circle cx="558.333" cy="104" r="5" fill="#78BBD3"/>
+<text x="572.333" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Python</tspan><tspan fill="#9198a1" dx="8">6.6%</tspan></text>
+<circle cx="25.000" cy="132" r="5" fill="#E38EB2"/>
+<text x="39.000" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C++</tspan><tspan fill="#9198a1" dx="8">6.0%</tspan></text>
+<circle cx="291.667" cy="132" r="5" fill="#BC96DF"/>
+<text x="305.667" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">CSS</tspan><tspan fill="#9198a1" dx="8">5.2%</tspan></text>
+<circle cx="558.333" cy="132" r="5" fill="#909CE4"/>
+<text x="572.333" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Lua</tspan><tspan fill="#9198a1" dx="8">4.5%</tspan></text>
+<circle cx="25.000" cy="160" r="5" fill="#D6AC76"/>
+<text x="39.000" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Java</tspan><tspan fill="#9198a1" dx="8">3.6%</tspan></text>
+<circle cx="291.667" cy="160" r="5" fill="#8EAAC8"/>
+<text x="305.667" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">PowerShell</tspan><tspan fill="#9198a1" dx="8">0.6%</tspan></text>
+<circle cx="558.333" cy="160" r="5" fill="#A5C589"/>
+<text x="572.333" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">HLSL</tspan><tspan fill="#9198a1" dx="8">0.4%</tspan></text>
+<circle cx="25.000" cy="188" r="5" fill="#9CA8B8"/>
+<text x="39.000" y="192" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C</tspan><tspan fill="#9198a1" dx="8">0.3%</tspan></text>
+<circle cx="291.667" cy="188" r="5" fill="#CE8492"/>
+<text x="305.667" y="192" font-size="14"><tspan fill="#f0f6fc" font-weight="600">CMake</tspan><tspan fill="#9198a1" dx="8">0.1%</tspan></text>
+<circle cx="558.333" cy="188" r="5" fill="#C1D58B"/>
+<text x="572.333" y="192" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Batchfile</tspan><tspan fill="#9198a1" dx="8">&lt;0.1%</tspan></text>
+<text x="20" y="220" font-size="12" fill="#9198a1">Private repositories · code size</text>
 </g>
 </svg>
