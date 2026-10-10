@@ -13,6 +13,21 @@ const FALLBACK_COLORS = new Map(Object.entries({
   Kotlin: '#A97BFF', Dart: '#00B4AB', Vue: '#41b883', Lua: '#000080',
 }));
 
+// A coordinated display palette. Statistics still use the original GitHub byte counts.
+const DISPLAY_COLORS = new Map(Object.entries({
+  'C#': '#9B8AFB', TypeScript: '#64A8EC', JavaScript: '#E8C96D',
+  HTML: '#E9957A', XML: '#65BFB0', Python: '#78BBD3',
+  'C++': '#E38EB2', CSS: '#BC96DF', Lua: '#909CE4', Java: '#D6AC76',
+  PowerShell: '#8EAAC8', HLSL: '#A5C589', C: '#9CA8B8',
+  CMake: '#CE8492', Batchfile: '#C1D58B',
+}));
+
+const CARD_WIDTH = 840;
+const PADDING = 20;
+const BAR_WIDTH = CARD_WIDTH - PADDING * 2;
+const LEGEND_COLUMNS = 3;
+const COLUMN_WIDTH = BAR_WIDTH / LEGEND_COLUMNS;
+
 async function apiJson(path, token, fetchImpl) {
   const url = new URL(path, API);
   if (url.origin !== API) throw new Error('Refusing to send the token outside GitHub API.');
@@ -141,7 +156,7 @@ function escapeXml(value) {
 }
 
 function colorFor(language, colors) {
-  const color = colors.get(language) ?? FALLBACK_COLORS.get(language);
+  const color = DISPLAY_COLORS.get(language) ?? colors.get(language) ?? FALLBACK_COLORS.get(language);
   if (/^#[\da-fA-F]{6}$/.test(color ?? '')) return color;
   let hash = 0;
   for (const char of language) hash = (hash * 31 + char.codePointAt(0)) >>> 0;
@@ -152,24 +167,24 @@ export function renderSvg(totals, colors = FALLBACK_COLORS, dark = false) {
   const entries = [...totals].filter(([, bytes]) => bytes > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
   if (!Number.isSafeInteger(total)) throw new Error('Total code size exceeds supported numeric precision.');
-  const rows = Math.max(1, Math.ceil(entries.length / 2));
-  const height = 105 + rows * 28;
+  const rows = Math.max(1, Math.ceil(entries.length / LEGEND_COLUMNS));
+  const height = 95 + rows * 28;
   const foreground = dark ? '#f0f6fc' : '#1f2328';
   const secondary = dark ? '#9198a1' : '#59636e';
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="${height}" viewBox="0 0 640 ${height}" role="img" aria-labelledby="title description">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" role="img" aria-labelledby="title description">`,
     '<title id="title">Private repository languages</title>',
     '<desc id="description">Language shares across owned private repositories, weighted by code bytes. Forked and archived repositories are included.</desc>',
     `<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif">`,
     `<text x="20" y="27" fill="${foreground}" font-size="17" font-weight="600">Languages</text>`,
-    '<defs><clipPath id="bar"><rect x="20" y="43" width="600" height="9" rx="4.5"/></clipPath></defs>',
-    `<rect x="20" y="43" width="600" height="9" rx="4.5" fill="${dark ? '#21262d' : '#eff2f5'}"/>`,
+    `<defs><clipPath id="bar"><rect x="${PADDING}" y="43" width="${BAR_WIDTH}" height="9" rx="4.5"/></clipPath></defs>`,
+    `<rect x="${PADDING}" y="43" width="${BAR_WIDTH}" height="9" rx="4.5" fill="${dark ? '#21262d' : '#eff2f5'}"/>`,
     '<g clip-path="url(#bar)">',
   ];
-  let x = 20;
+  let x = PADDING;
   for (let index = 0; index < entries.length; index += 1) {
     const [language, bytes] = entries[index];
-    const width = index === entries.length - 1 ? 620 - x : (bytes / total) * 600;
+    const width = index === entries.length - 1 ? CARD_WIDTH - PADDING - x : (bytes / total) * BAR_WIDTH;
     parts.push(`<rect x="${x.toFixed(6)}" y="43" width="${width.toFixed(6)}" height="9" fill="${colorFor(language, colors)}"/>`);
     x += width;
   }
@@ -179,12 +194,13 @@ export function renderSvg(totals, colors = FALLBACK_COLORS, dark = false) {
     const [language, bytes] = entries[index];
     const percent = (bytes / total) * 100;
     const share = percent < 0.1 ? '<0.1%' : `${percent.toFixed(1)}%`;
-    const columnX = index % 2 === 0 ? 20 : 330;
-    const y = 80 + Math.floor(index / 2) * 28;
+    const columnX = PADDING + (index % LEGEND_COLUMNS) * COLUMN_WIDTH;
+    const y = 80 + Math.floor(index / LEGEND_COLUMNS) * 28;
     const label = `${language}  ${share}`;
-    const fitted = [...label].length * 7.5 > 264 ? ' textLength="264" lengthAdjust="spacingAndGlyphs"' : '';
-    parts.push(`<circle cx="${columnX + 5}" cy="${y - 4}" r="5" fill="${colorFor(language, colors)}"/>`);
-    parts.push(`<text x="${columnX + 19}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)}</tspan></text>`);
+    const labelWidth = Math.floor(COLUMN_WIDTH - 39);
+    const fitted = [...label].length * 7.5 > labelWidth ? ` textLength="${labelWidth}" lengthAdjust="spacingAndGlyphs"` : '';
+    parts.push(`<circle cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colorFor(language, colors)}"/>`);
+    parts.push(`<text x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)}</tspan></text>`);
   }
   if (!entries.length) parts.push(`<text x="20" y="80" font-size="14" fill="${secondary}">No language data in the accessible private repositories.</text>`);
   parts.push(`<text x="20" y="${height - 15}" font-size="12" fill="${secondary}">Private repositories · code size</text>`, '</g>', '</svg>', '');
