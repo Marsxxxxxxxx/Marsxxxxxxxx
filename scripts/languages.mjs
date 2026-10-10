@@ -1,4 +1,4 @@
-// Node.js 18+; no npm packages required. Keep PRIVATE_STATS_TOKEN in an Actions Secret.
+// Node.js 18+; no npm packages required. Keep LANGUAGE_STATS_TOKEN in an Actions Secret.
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
@@ -55,7 +55,7 @@ async function apiJson(path, token, fetchImpl) {
   }
   if (!response.ok) {
     const advice = {
-      401: 'PRIVATE_STATS_TOKEN is invalid or expired. Replace the repository secret.',
+      401: 'LANGUAGE_STATS_TOKEN is invalid or expired. Replace the repository secret.',
       403: 'Check token access (All repositories, Metadata: Read) and GitHub API rate limits.',
       404: 'A repository is unavailable. Check token access and run the workflow again.',
     };
@@ -70,7 +70,7 @@ async function apiJson(path, token, fetchImpl) {
 }
 
 export async function collectLanguages({ token, owner, fetchImpl = fetch }) {
-  if (!token?.trim()) throw new Error('Create the PRIVATE_STATS_TOKEN repository secret first.');
+  if (!token?.trim()) throw new Error('Create the LANGUAGE_STATS_TOKEN repository secret first.');
   if (!owner?.trim()) throw new Error('STATS_OWNER must contain the profile repository owner.');
   const expectedOwner = owner.trim().toLowerCase();
   const account = await apiJson('/user', token, fetchImpl);
@@ -228,7 +228,7 @@ export function updateReadmeImages(readme, version) {
 
 export async function main(env = process.env) {
   const [totals, colors] = await Promise.all([
-    collectLanguages({ token: env.PRIVATE_STATS_TOKEN, owner: env.STATS_OWNER }),
+    collectLanguages({ token: env.LANGUAGE_STATS_TOKEN, owner: env.STATS_OWNER }),
     languageColors(),
   ]);
   const light = renderSvg(totals, colors);
@@ -248,9 +248,11 @@ export async function main(env = process.env) {
   await writeFile(resolve(directory, 'languages.svg'), light, 'utf8');
   await writeFile(resolve(directory, 'languages-dark.svg'), dark, 'utf8');
   if (updatedReadme !== readme) await writeFile(resolve('README.md'), updatedReadme, 'utf8');
-  // Remove only the two generated images from the previous version, after successful generation.
+  // Remove obsolete generated images and entry points after successful generation.
   await rm(resolve(directory, 'private-languages.svg'), { force: true });
   await rm(resolve(directory, 'private-languages-dark.svg'), { force: true });
+  await rm(resolve('.github', 'workflows', 'private-languages.yml'), { force: true });
+  await rm(resolve('scripts', 'private-languages.mjs'), { force: true });
   console.log('Updated language cards and README image versions. Only aggregate language shares were saved.');
 }
 
