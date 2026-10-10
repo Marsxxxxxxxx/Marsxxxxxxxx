@@ -1,4 +1,4 @@
-name: Update private language bar
+name: Update language bar
 
 on:
   workflow_dispatch:
@@ -10,12 +10,12 @@ on:
       - 'scripts/private-languages.mjs'
 
 # This write permission belongs to the profile repository's GITHUB_TOKEN.
-# PRIVATE_STATS_TOKEN only needs Metadata: Read for the private repositories.
+# PRIVATE_STATS_TOKEN only needs Metadata: Read for repository metadata.
 permissions:
   contents: write
 
 concurrency:
-  group: private-language-bar-${{ github.ref }}
+  group: language-bar-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -40,6 +40,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'Language shares are unchanged.'
           else
-            git commit -m 'Update private repository language bar'
+            git commit -m 'Update repository language bar'
             git push
           fi

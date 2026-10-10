@@ -41,7 +41,7 @@ async function apiJson(path, token, fetchImpl) {
           Accept: 'application/vnd.github+json',
           Authorization: `Bearer ${token}`,
           'X-GitHub-Api-Version': '2026-03-10',
-          'User-Agent': 'private-profile-languages',
+          'User-Agent': 'profile-languages',
         },
       });
     } catch {
@@ -81,24 +81,24 @@ export async function collectLanguages({ token, owner, fetchImpl = fetch }) {
   // Read all pages; a full page is followed by another request, including an empty final page.
   for (let page = 1; ; page += 1) {
     const query = new URLSearchParams({
-      visibility: 'private', affiliation: 'owner', per_page: '100',
+      visibility: 'all', affiliation: 'owner', per_page: '100',
       sort: 'full_name', direction: 'asc', page: String(page),
     });
     const batch = await apiJson(`/user/repos?${query}`, token, fetchImpl);
     if (!Array.isArray(batch)) throw new Error('GitHub returned an unexpected repository list.');
     for (const repo of batch) {
-      if (repo.private === true && repo.owner?.login?.toLowerCase() === expectedOwner) {
+      if (repo.owner?.login?.toLowerCase() === expectedOwner) {
         if (!Number.isSafeInteger(repo.id) || typeof repo.name !== 'string') {
           throw new Error('GitHub returned invalid repository metadata.');
         }
-        // Forked and archived private repositories are included intentionally.
+        // Public, private, forked and archived repositories are included intentionally.
         repositories.set(repo.id, repo);
       }
     }
     if (batch.length < 100) break;
   }
   if (repositories.size === 0) {
-    throw new Error('No accessible private repositories. Check Resource owner and All repositories in the token settings.');
+    throw new Error('No accessible repositories. Check Resource owner and All repositories in the token settings.');
   }
 
   const totals = new Map();
@@ -173,9 +173,9 @@ export function renderSvg(totals, colors = FALLBACK_COLORS, dark = false) {
   const secondary = dark ? '#9198a1' : '#59636e';
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" role="img" aria-labelledby="title description">`,
-    '<title id="title">Private repository languages</title>',
-    '<desc id="description">Language shares across owned private repositories, weighted by code bytes. Forked and archived repositories are included.</desc>',
-    `<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif">`,
+    '<title id="title">All Languages · Usage</title>',
+    '<desc id="description">Language shares across all owned public and private repositories, weighted by code bytes. Forked and archived repositories are included.</desc>',
+    `<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">`,
     `<text x="20" y="27" fill="${foreground}" font-size="17" font-weight="600">Languages</text>`,
     `<defs><clipPath id="bar"><rect x="${PADDING}" y="43" width="${BAR_WIDTH}" height="9" rx="4.5"/></clipPath></defs>`,
     `<rect x="${PADDING}" y="43" width="${BAR_WIDTH}" height="9" rx="4.5" fill="${dark ? '#21262d' : '#eff2f5'}"/>`,
@@ -202,8 +202,8 @@ export function renderSvg(totals, colors = FALLBACK_COLORS, dark = false) {
     parts.push(`<circle cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colorFor(language, colors)}"/>`);
     parts.push(`<text x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)}</tspan></text>`);
   }
-  if (!entries.length) parts.push(`<text x="20" y="80" font-size="14" fill="${secondary}">No language data in the accessible private repositories.</text>`);
-  parts.push(`<text x="20" y="${height - 15}" font-size="12" fill="${secondary}">Private repositories · code size</text>`, '</g>', '</svg>', '');
+  if (!entries.length) parts.push(`<text x="20" y="80" font-size="14" fill="${secondary}">No language data in the accessible repositories.</text>`);
+  parts.push(`<text x="20" y="${height - 15}" font-size="12" fill="${secondary}">All Languages · Usage</text>`, '</g>', '</svg>', '');
   return parts.join('\n');
 }
 
