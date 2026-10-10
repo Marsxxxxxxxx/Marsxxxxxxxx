@@ -8,6 +8,7 @@ on:
     paths:
       - '.github/workflows/private-languages.yml'
       - 'scripts/private-languages.mjs'
+      - 'README.md'
 
 # This write permission belongs to the profile repository's GITHUB_TOKEN.
 # PRIVATE_STATS_TOKEN only needs Metadata: Read for repository metadata.
@@ -32,13 +33,13 @@ jobs:
           STATS_OWNER: ${{ github.repository_owner }}
         run: node scripts/private-languages.mjs
 
-      - name: Commit updated bars
+      - name: Commit updated bars and README
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/private-languages.svg assets/private-languages-dark.svg
+          git add -A -- assets README.md
           if git diff --cached --quiet; then
-            echo 'Language shares are unchanged.'
+            echo 'Language shares and README image versions are unchanged.'
           else
             git commit -m 'Update repository language bar'
             git push

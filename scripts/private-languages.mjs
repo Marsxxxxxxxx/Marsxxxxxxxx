@@ -1,5 +1,6 @@
 // Node.js 18+; no npm packages required. Keep PRIVATE_STATS_TOKEN in an Actions Secret.
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -207,6 +208,24 @@ export function renderSvg(totals, colors = FALLBACK_COLORS, dark = false) {
   return parts.join('\n');
 }
 
+export function updateReadmeImages(readme, version) {
+  let references = 0;
+  const updated = readme.replace(
+    /((?:\.\/)?assets\/)(?:private-)?languages(-dark)?\.svg(?=[?\#"'()\s<>]|$)(?:\?([^"'()\s<>\#]*))?/g,
+    (_, prefix, theme = '', query = '') => {
+      references += 1;
+      const parameters = new URLSearchParams(query.replaceAll('&amp;', '&'));
+      parameters.set('v', version);
+      const suffix = parameters.toString();
+      return `${prefix}languages${theme}.svg?${query.includes('&amp;') ? suffix.replaceAll('&', '&amp;') : suffix}`;
+    },
+  );
+  if (!references) {
+    throw new Error('README.md has no language image references. Add the supplied picture block first.');
+  }
+  return updated;
+}
+
 export async function main(env = process.env) {
   const [totals, colors] = await Promise.all([
     collectLanguages({ token: env.PRIVATE_STATS_TOKEN, owner: env.STATS_OWNER }),
@@ -214,12 +233,25 @@ export async function main(env = process.env) {
   ]);
   const light = renderSvg(totals, colors);
   const dark = renderSvg(totals, colors, true);
-  // Only aggregate SVGs are written. No repository lists, names, URLs or raw JSON.
+  let readme;
+  try {
+    readme = await readFile(resolve('README.md'), 'utf8');
+  } catch {
+    throw new Error('Cannot read README.md. Add the supplied picture block to the profile README first.');
+  }
+  // The version changes only when the displayed image changes, so unchanged runs create no commit.
+  const version = createHash('sha256').update(light).update('\0').update(dark).digest('hex').slice(0, 12);
+  const updatedReadme = updateReadmeImages(readme, version);
+  // Only aggregate SVGs and their README references are written. No raw repository data is saved.
   const directory = resolve('assets');
   await mkdir(directory, { recursive: true });
-  await writeFile(resolve(directory, 'private-languages.svg'), light, 'utf8');
-  await writeFile(resolve(directory, 'private-languages-dark.svg'), dark, 'utf8');
-  console.log('Updated language cards. Only aggregate language shares were saved.');
+  await writeFile(resolve(directory, 'languages.svg'), light, 'utf8');
+  await writeFile(resolve(directory, 'languages-dark.svg'), dark, 'utf8');
+  if (updatedReadme !== readme) await writeFile(resolve('README.md'), updatedReadme, 'utf8');
+  // Remove only the two generated images from the previous version, after successful generation.
+  await rm(resolve(directory, 'private-languages.svg'), { force: true });
+  await rm(resolve(directory, 'private-languages-dark.svg'), { force: true });
+  console.log('Updated language cards and README image versions. Only aggregate language shares were saved.');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
