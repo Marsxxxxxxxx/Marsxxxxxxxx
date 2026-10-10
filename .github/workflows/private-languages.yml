@@ -1,0 +1,45 @@
+name: Update private language bar
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 0 * * *' # Daily at 08:17 Asia/Shanghai (GitHub scheduling can be delayed).
+  push:
+    paths:
+      - '.github/workflows/private-languages.yml'
+      - 'scripts/private-languages.mjs'
+
+# This write permission belongs to the profile repository's GITHUB_TOKEN.
+# PRIVATE_STATS_TOKEN only needs Metadata: Read for the private repositories.
+permissions:
+  contents: write
+
+concurrency:
+  group: private-language-bar-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the profile repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Generate language bars
+        env:
+          PRIVATE_STATS_TOKEN: ${{ secrets.PRIVATE_STATS_TOKEN }}
+          STATS_OWNER: ${{ github.repository_owner }}
+        run: node scripts/private-languages.mjs
+
+      - name: Commit updated bars
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/private-languages.svg assets/private-languages-dark.svg
+          if git diff --cached --quiet; then
+            echo 'Language shares are unchanged.'
+          else
+            git commit -m 'Update private repository language bar'
+            git push
+          fi
