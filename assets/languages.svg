@@ -6,21 +6,21 @@
 <defs><clipPath id="bar"><rect x="20" y="43" width="800" height="9" rx="4.5"/></clipPath></defs>
 <rect x="20" y="43" width="800" height="9" rx="4.5" fill="#eff2f5"/>
 <g clip-path="url(#bar)">
-<rect x="20.000000" y="43" width="224.665875" height="9" fill="#9CA8B8"/>
-<rect x="244.665875" y="43" width="203.688414" height="9" fill="#9B8AFB"/>
-<rect x="448.354289" y="43" width="80.275701" height="9" fill="#64A8EC"/>
-<rect x="528.629990" y="43" width="65.510989" height="9" fill="#E8C96D"/>
-<rect x="594.140979" y="43" width="63.562310" height="9" fill="#D6AC76"/>
-<rect x="657.703288" y="43" width="34.324310" height="9" fill="#E9957A"/>
-<rect x="692.027599" y="43" width="29.339588" height="9" fill="#78BBD3"/>
-<rect x="721.367187" y="43" width="28.515250" height="9" fill="#E38EB2"/>
-<rect x="749.882436" y="43" width="26.658439" height="9" fill="#65BFB0"/>
-<rect x="776.540876" y="43" width="19.707884" height="9" fill="#BC96DF"/>
-<rect x="796.248760" y="43" width="16.141024" height="9" fill="#909CE4"/>
-<rect x="812.389783" y="43" width="5.801627" height="9" fill="#8EAAC8"/>
-<rect x="818.191411" y="43" width="1.324278" height="9" fill="#A5C589"/>
-<rect x="819.515689" y="43" width="0.433993" height="9" fill="#CE8492"/>
-<rect x="819.949682" y="43" width="0.050318" height="9" fill="#C1D58B"/>
+<rect x="20.000000" y="43" width="224.622688" height="9" fill="#9CA8B8"/>
+<rect x="244.622688" y="43" width="203.649259" height="9" fill="#9B8AFB"/>
+<rect x="448.271947" y="43" width="80.260269" height="9" fill="#64A8EC"/>
+<rect x="528.532216" y="43" width="65.652179" height="9" fill="#E8C96D"/>
+<rect x="594.184395" y="43" width="63.550091" height="9" fill="#D6AC76"/>
+<rect x="657.734486" y="43" width="34.317712" height="9" fill="#E9957A"/>
+<rect x="692.052199" y="43" width="29.333948" height="9" fill="#78BBD3"/>
+<rect x="721.386147" y="43" width="28.509768" height="9" fill="#E38EB2"/>
+<rect x="749.895915" y="43" width="26.653315" height="9" fill="#65BFB0"/>
+<rect x="776.549230" y="43" width="19.704096" height="9" fill="#BC96DF"/>
+<rect x="796.253325" y="43" width="16.137921" height="9" fill="#909CE4"/>
+<rect x="812.391246" y="43" width="5.800512" height="9" fill="#8EAAC8"/>
+<rect x="818.191759" y="43" width="1.324024" height="9" fill="#A5C589"/>
+<rect x="819.515782" y="43" width="0.433909" height="9" fill="#CE8492"/>
+<rect x="819.949692" y="43" width="0.050308" height="9" fill="#C1D58B"/>
 </g>
 <circle cx="25.000" cy="76" r="5" fill="#9CA8B8"/>
 <text x="39.000" y="80" font-size="14"><tspan fill="#1f2328" font-weight="600">C</tspan><tspan fill="#59636e" dx="8">28.1%</tspan></text>
