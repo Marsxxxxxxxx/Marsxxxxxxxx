@@ -31,6 +31,8 @@ jobs:
         env:
           LANGUAGE_STATS_TOKEN: ${{ secrets.LANGUAGE_STATS_TOKEN || secrets.PRIVATE_STATS_TOKEN }}
           STATS_OWNER: ${{ github.repository_owner }}
+          STATS_REPOSITORY: ${{ github.repository }}
+          STATS_REF: ${{ github.ref_name }}
         run: node scripts/languages.mjs
 
       - name: Commit updated bars and README

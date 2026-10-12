@@ -208,16 +208,22 @@ export function renderSvg(totals, colors = FALLBACK_COLORS, dark = false) {
   return parts.join('\n');
 }
 
-export function updateReadmeImages(readme, version) {
+export function updateReadmeImages(readme, version, { repository, ref = 'main' } = {}) {
+  if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '')) {
+    throw new Error('STATS_REPOSITORY must contain the profile repository in owner/name format.');
+  }
+  if (!ref?.trim()) throw new Error('STATS_REF must contain the branch used for the language images.');
+  const imageBase = `https://raw.githubusercontent.com/${repository}/${ref.split('/').map(encodeURIComponent).join('/')}/assets/`;
   let references = 0;
   const updated = readme.replace(
-    /((?:\.\/)?assets\/)(?:private-)?languages(-dark)?\.svg(?=[?\#"'()\s<>]|$)(?:\?([^"'()\s<>\#]*))?/g,
-    (_, prefix, theme = '', query = '') => {
+    /(?<![^\s"'(<])(?:(?:https:\/\/(?:raw\.githubusercontent\.com|github\.com)\/[^\s"'()<>?#]*\/)|\.\/|\/)?assets\/(?:private-)?languages(-dark)?\.svg(?=[?\#"'()\s<>]|$)(?:\?([^"'()\s<>\#]*))?/g,
+    (_, theme = '', query = '') => {
       references += 1;
       const parameters = new URLSearchParams(query.replaceAll('&amp;', '&'));
       parameters.set('v', version);
       const suffix = parameters.toString();
-      return `${prefix}languages${theme}.svg?${query.includes('&amp;') ? suffix.replaceAll('&', '&amp;') : suffix}`;
+      // Relative GitHub /raw/ redirects drop query parameters, defeating image cache versions.
+      return `${imageBase}languages${theme}.svg?${query.includes('&amp;') ? suffix.replaceAll('&', '&amp;') : suffix}`;
     },
   );
   if (!references) {
@@ -241,7 +247,10 @@ export async function main(env = process.env) {
   }
   // The version changes only when the displayed image changes, so unchanged runs create no commit.
   const version = createHash('sha256').update(light).update('\0').update(dark).digest('hex').slice(0, 12);
-  const updatedReadme = updateReadmeImages(readme, version);
+  const updatedReadme = updateReadmeImages(readme, version, {
+    repository: env.STATS_REPOSITORY || env.GITHUB_REPOSITORY || `${env.STATS_OWNER.trim()}/${env.STATS_OWNER.trim()}`,
+    ref: env.STATS_REF || env.GITHUB_REF_NAME || 'main',
+  });
   // Only aggregate SVGs and their README references are written. No raw repository data is saved.
   const directory = resolve('assets');
   await mkdir(directory, { recursive: true });
