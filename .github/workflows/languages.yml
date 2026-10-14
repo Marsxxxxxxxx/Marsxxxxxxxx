@@ -3,7 +3,7 @@ name: Update language bar
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 0 * * *' # Daily at 08:17 Asia/Shanghai (GitHub scheduling can be delayed).
+    - cron: '17 * * * *' # Hourly at minute 17 (GitHub scheduling can be delayed).
   push:
     paths:
       - '.github/workflows/languages.yml'
