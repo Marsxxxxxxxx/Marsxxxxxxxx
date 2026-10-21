@@ -6,47 +6,47 @@
 <defs><clipPath id="bar"><rect x="20" y="43" width="800" height="9" rx="4.5"/></clipPath></defs>
 <rect x="20" y="43" width="800" height="9" rx="4.5" fill="#21262d"/>
 <g clip-path="url(#bar)">
-<rect x="20.000000" y="43" width="205.613766" height="9" fill="#9B8AFB"/>
-<rect x="225.613766" y="43" width="184.946454" height="9" fill="#9CA8B8"/>
-<rect x="410.560221" y="43" width="65.253521" height="9" fill="#dea584"/>
-<rect x="475.813742" y="43" width="64.383110" height="9" fill="#64A8EC"/>
-<rect x="540.196852" y="43" width="59.366242" height="9" fill="#D6AC76"/>
-<rect x="599.563093" y="43" width="53.461383" height="9" fill="#E8C96D"/>
-<rect x="653.024477" y="43" width="42.415989" height="9" fill="#78BBD3"/>
-<rect x="695.440465" y="43" width="27.528951" height="9" fill="#E9957A"/>
-<rect x="722.969417" y="43" width="23.705957" height="9" fill="#E38EB2"/>
-<rect x="746.675374" y="43" width="21.418642" height="9" fill="#8EAAC8"/>
-<rect x="768.094016" y="43" width="21.380732" height="9" fill="#65BFB0"/>
-<rect x="789.474747" y="43" width="15.806213" height="9" fill="#BC96DF"/>
-<rect x="805.280961" y="43" width="12.945503" height="9" fill="#909CE4"/>
-<rect x="818.226463" y="43" width="1.062104" height="9" fill="#A5C589"/>
-<rect x="819.288568" y="43" width="0.363359" height="9" fill="#C1D58B"/>
-<rect x="819.651927" y="43" width="0.348073" height="9" fill="#CE8492"/>
+<rect x="20.000000" y="43" width="201.914296" height="9" fill="#9B8AFB"/>
+<rect x="221.914296" y="43" width="182.215842" height="9" fill="#9CA8B8"/>
+<rect x="404.130137" y="43" width="71.928037" height="9" fill="#dea584"/>
+<rect x="476.058174" y="43" width="63.224707" height="9" fill="#64A8EC"/>
+<rect x="539.282881" y="43" width="58.298105" height="9" fill="#D6AC76"/>
+<rect x="597.580986" y="43" width="52.499488" height="9" fill="#E8C96D"/>
+<rect x="650.080474" y="43" width="47.535958" height="9" fill="#78BBD3"/>
+<rect x="697.616432" y="43" width="27.033641" height="9" fill="#E9957A"/>
+<rect x="724.650073" y="43" width="23.279432" height="9" fill="#E38EB2"/>
+<rect x="747.929505" y="43" width="21.098420" height="9" fill="#8EAAC8"/>
+<rect x="769.027925" y="43" width="20.996042" height="9" fill="#65BFB0"/>
+<rect x="790.023968" y="43" width="15.521823" height="9" fill="#BC96DF"/>
+<rect x="805.545790" y="43" width="12.712583" height="9" fill="#909CE4"/>
+<rect x="818.258373" y="43" width="1.042994" height="9" fill="#A5C589"/>
+<rect x="819.301368" y="43" width="0.356822" height="9" fill="#C1D58B"/>
+<rect x="819.658190" y="43" width="0.341810" height="9" fill="#CE8492"/>
 </g>
 <circle cx="25.000" cy="76" r="5" fill="#9B8AFB"/>
-<text x="39.000" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C#</tspan><tspan fill="#9198a1" dx="8">25.7%</tspan></text>
+<text x="39.000" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C#</tspan><tspan fill="#9198a1" dx="8">25.2%</tspan></text>
 <circle cx="291.667" cy="76" r="5" fill="#9CA8B8"/>
-<text x="305.667" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C</tspan><tspan fill="#9198a1" dx="8">23.1%</tspan></text>
+<text x="305.667" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C</tspan><tspan fill="#9198a1" dx="8">22.8%</tspan></text>
 <circle cx="558.333" cy="76" r="5" fill="#dea584"/>
-<text x="572.333" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Rust</tspan><tspan fill="#9198a1" dx="8">8.2%</tspan></text>
+<text x="572.333" y="80" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Rust</tspan><tspan fill="#9198a1" dx="8">9.0%</tspan></text>
 <circle cx="25.000" cy="104" r="5" fill="#64A8EC"/>
-<text x="39.000" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">TypeScript</tspan><tspan fill="#9198a1" dx="8">8.0%</tspan></text>
+<text x="39.000" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">TypeScript</tspan><tspan fill="#9198a1" dx="8">7.9%</tspan></text>
 <circle cx="291.667" cy="104" r="5" fill="#D6AC76"/>
-<text x="305.667" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Java</tspan><tspan fill="#9198a1" dx="8">7.4%</tspan></text>
+<text x="305.667" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Java</tspan><tspan fill="#9198a1" dx="8">7.3%</tspan></text>
 <circle cx="558.333" cy="104" r="5" fill="#E8C96D"/>
-<text x="572.333" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">JavaScript</tspan><tspan fill="#9198a1" dx="8">6.7%</tspan></text>
+<text x="572.333" y="108" font-size="14"><tspan fill="#f0f6fc" font-weight="600">JavaScript</tspan><tspan fill="#9198a1" dx="8">6.6%</tspan></text>
 <circle cx="25.000" cy="132" r="5" fill="#78BBD3"/>
-<text x="39.000" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Python</tspan><tspan fill="#9198a1" dx="8">5.3%</tspan></text>
+<text x="39.000" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Python</tspan><tspan fill="#9198a1" dx="8">5.9%</tspan></text>
 <circle cx="291.667" cy="132" r="5" fill="#E9957A"/>
 <text x="305.667" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">HTML</tspan><tspan fill="#9198a1" dx="8">3.4%</tspan></text>
 <circle cx="558.333" cy="132" r="5" fill="#E38EB2"/>
-<text x="572.333" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C++</tspan><tspan fill="#9198a1" dx="8">3.0%</tspan></text>
+<text x="572.333" y="136" font-size="14"><tspan fill="#f0f6fc" font-weight="600">C++</tspan><tspan fill="#9198a1" dx="8">2.9%</tspan></text>
 <circle cx="25.000" cy="160" r="5" fill="#8EAAC8"/>
-<text x="39.000" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">PowerShell</tspan><tspan fill="#9198a1" dx="8">2.7%</tspan></text>
+<text x="39.000" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">PowerShell</tspan><tspan fill="#9198a1" dx="8">2.6%</tspan></text>
 <circle cx="291.667" cy="160" r="5" fill="#65BFB0"/>
-<text x="305.667" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">XML</tspan><tspan fill="#9198a1" dx="8">2.7%</tspan></text>
+<text x="305.667" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">XML</tspan><tspan fill="#9198a1" dx="8">2.6%</tspan></text>
 <circle cx="558.333" cy="160" r="5" fill="#BC96DF"/>
-<text x="572.333" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">CSS</tspan><tspan fill="#9198a1" dx="8">2.0%</tspan></text>
+<text x="572.333" y="164" font-size="14"><tspan fill="#f0f6fc" font-weight="600">CSS</tspan><tspan fill="#9198a1" dx="8">1.9%</tspan></text>
 <circle cx="25.000" cy="188" r="5" fill="#909CE4"/>
 <text x="39.000" y="192" font-size="14"><tspan fill="#f0f6fc" font-weight="600">Lua</tspan><tspan fill="#9198a1" dx="8">1.6%</tspan></text>
 <circle cx="291.667" cy="188" r="5" fill="#A5C589"/>
