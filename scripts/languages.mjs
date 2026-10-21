@@ -12,9 +12,10 @@ const HUE_START = 290;
 
 const CARD_WIDTH = 840;
 const PADDING = 20;
-const BAR_WIDTH = CARD_WIDTH - PADDING * 2;
+const CONTENT_WIDTH = CARD_WIDTH - PADDING * 2;
 const LEGEND_COLUMNS = 3;
-const COLUMN_WIDTH = BAR_WIDTH / LEGEND_COLUMNS;
+const COLUMN_WIDTH = CONTENT_WIDTH / LEGEND_COLUMNS;
+const BAR_WIDTH = CONTENT_WIDTH;
 
 async function apiJson(path, token, fetchImpl) {
   const url = new URL(path, API);
@@ -167,7 +168,7 @@ export function renderBarSeparators(widths, dark = false) {
   let x = PADDING;
   for (let index = 0; index < widths.length; index += 1) {
     if (index > 0 && widths[index - 1] >= 6 && widths[index] >= 6) {
-      parts.push(`<path d="M${x.toFixed(6)} 43.5V51.5" stroke="${dark ? '#0d1117' : '#ffffff'}" stroke-width="1.1"/>`);
+      parts.push(`<path class="bar-divider" d="M${x.toFixed(6)} 43.5V51.5" stroke="${dark ? '#0d1117' : '#ffffff'}" stroke-width="1.1"/>`);
     }
     x += widths[index];
   }
@@ -199,7 +200,7 @@ export function renderSvg(totals, dark = false) {
     const [, bytes] = entries[index];
     const width = index === entries.length - 1 ? CARD_WIDTH - PADDING - x : (bytes / total) * BAR_WIDTH;
     widths.push(width);
-    parts.push(`<rect x="${x.toFixed(6)}" y="43" width="${width.toFixed(6)}" height="9" fill="${colors[index]}"/>`);
+    parts.push(`<rect class="bar-segment" data-language="${escapeXml(entries[index][0])}" data-share="${(bytes / total).toPrecision(16)}" x="${x.toFixed(6)}" y="43" width="${width.toFixed(6)}" height="9" fill="${colors[index]}"/>`);
     x += width;
   }
   parts.push(renderBarSeparators(widths, dark), '</g>');
@@ -213,8 +214,8 @@ export function renderSvg(totals, dark = false) {
     const label = `${language}  ${share}`;
     const labelWidth = Math.floor(COLUMN_WIDTH - 39);
     const fitted = [...label].length * 7.5 > labelWidth ? ` textLength="${labelWidth}" lengthAdjust="spacingAndGlyphs"` : '';
-    parts.push(`<circle cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colors[index]}" stroke="${foreground}" stroke-opacity="0.35" stroke-width="0.7"/>`);
-    parts.push(`<text x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)}</tspan></text>`);
+    parts.push(`<circle class="legend-dot" cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colors[index]}" stroke="${foreground}" stroke-opacity="0.35" stroke-width="0.7"/>`);
+    parts.push(`<text class="legend-label" x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)}</tspan></text>`);
   }
   if (!entries.length) parts.push(`<text x="20" y="80" font-size="14" fill="${secondary}">No language data in the accessible repositories.</text>`);
   parts.push(`<text x="20" y="${height - 15}" font-size="12" fill="${secondary}">All Languages · Usage</text>`, '</g>', '</svg>', '');
