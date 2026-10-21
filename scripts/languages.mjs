@@ -5,9 +5,10 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const API = 'https://api.github.com';
-// Reuse the existing soft colors, ordered from cool to warm instead of by language name.
-const RANK_COLOR_STOPS = ['#9B8AFB', '#64A8EC', '#65BFB0', '#A5C589', '#E8C96D', '#E9957A']
-  .map((hex) => [1, 3, 5].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16)));
+// A soft full-wheel palette with consistent perceptual lightness and chroma.
+const COLOR_LIGHTNESS = 0.74;
+const COLOR_CHROMA = 0.12;
+const HUE_START = 290;
 
 const CARD_WIDTH = 840;
 const PADDING = 20;
@@ -112,20 +113,70 @@ function escapeXml(value) {
   })[character]);
 }
 
-export function rankColors(count) {
-  return Array.from({ length: count }, (_, rank) => {
-    const position = count <= 1 ? 0 : rank / (count - 1) * (RANK_COLOR_STOPS.length - 1);
-    const start = Math.min(Math.floor(position), RANK_COLOR_STOPS.length - 2);
-    const blend = position - start;
-    const channels = RANK_COLOR_STOPS[start].map((channel, index) =>
-      Math.round(channel + (RANK_COLOR_STOPS[start + 1][index] - channel) * blend));
-    return `#${channels.map((channel) => channel.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+function colorAtHue(hue) {
+  const angle = hue * Math.PI / 180;
+  let chroma = COLOR_CHROMA;
+  let rgb;
+  // OKLCH -> linear sRGB; reduce chroma only when a hue falls outside sRGB.
+  // Conversion reference: https://www.w3.org/TR/css-color-4/#color-conversion-code
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const a = chroma * Math.cos(angle);
+    const b = chroma * Math.sin(angle);
+    const l = (COLOR_LIGHTNESS + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+    const m = (COLOR_LIGHTNESS - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+    const s = (COLOR_LIGHTNESS - 0.0894841775 * a - 1.2914855480 * b) ** 3;
+    rgb = [
+      4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
+    ];
+    if (rgb.every((channel) => channel >= 0 && channel <= 1)) break;
+    chroma *= 0.95;
+  }
+  return `#${rgb.map((channel) => {
+    const linear = Math.min(1, Math.max(0, channel));
+    const encoded = linear <= 0.0031308 ? 12.92 * linear : 1.055 * linear ** (1 / 2.4) - 0.055;
+    return Math.round(encoded * 255).toString(16).padStart(2, '0');
+  }).join('').toUpperCase()}`;
+}
+
+export function rankColors(weights) {
+  if (!Array.isArray(weights) || weights.some((weight) => !Number.isFinite(weight) || weight <= 0)) {
+    throw new Error('Color weights must be positive finite numbers.');
+  }
+  const count = weights.length;
+  if (count === 0) return [];
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  let accumulated = 0;
+  const centers = weights.map((weight) => {
+    const center = (accumulated + weight / 2) / total;
+    accumulated += weight;
+    return center;
   });
+  // Leave one color slot open so the first and last language do not share a hue.
+  const hueSpan = 360 * (count - 1) / count;
+  return centers.map((center, rank) => {
+    const position = count === 1 ? 0 : 0.5 * rank / (count - 1) +
+      0.5 * (center - centers[0]) / (centers[count - 1] - centers[0]);
+    return colorAtHue(HUE_START - hueSpan * position);
+  });
+}
+
+export function renderBarSeparators(widths, dark = false) {
+  const parts = [];
+  let x = PADDING;
+  for (let index = 0; index < widths.length; index += 1) {
+    if (index > 0 && widths[index - 1] >= 6 && widths[index] >= 6) {
+      parts.push(`<path d="M${x.toFixed(6)} 43.5V51.5" stroke="${dark ? '#0d1117' : '#ffffff'}" stroke-width="1.1"/>`);
+    }
+    x += widths[index];
+  }
+  return parts.join('\n');
 }
 
 export function renderSvg(totals, dark = false) {
   const entries = [...totals].filter(([, bytes]) => bytes > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  const colors = rankColors(entries.length);
+  const colors = rankColors(entries.map(([, bytes]) => bytes));
   const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
   if (!Number.isSafeInteger(total)) throw new Error('Total code size exceeds supported numeric precision.');
   const rows = Math.max(1, Math.ceil(entries.length / LEGEND_COLUMNS));
@@ -143,14 +194,16 @@ export function renderSvg(totals, dark = false) {
     '<g clip-path="url(#bar)">',
   ];
   let x = PADDING;
+  const widths = [];
   for (let index = 0; index < entries.length; index += 1) {
     const [, bytes] = entries[index];
     const width = index === entries.length - 1 ? CARD_WIDTH - PADDING - x : (bytes / total) * BAR_WIDTH;
+    widths.push(width);
     parts.push(`<rect x="${x.toFixed(6)}" y="43" width="${width.toFixed(6)}" height="9" fill="${colors[index]}"/>`);
     x += width;
   }
-  parts.push('</g>');
-  // No fixed-width gaps, so separators cannot erase very small language shares.
+  parts.push(renderBarSeparators(widths, dark), '</g>');
+  // Separators are omitted next to tiny segments, keeping every language visible.
   for (let index = 0; index < entries.length; index += 1) {
     const [language, bytes] = entries[index];
     const percent = (bytes / total) * 100;
@@ -160,7 +213,7 @@ export function renderSvg(totals, dark = false) {
     const label = `${language}  ${share}`;
     const labelWidth = Math.floor(COLUMN_WIDTH - 39);
     const fitted = [...label].length * 7.5 > labelWidth ? ` textLength="${labelWidth}" lengthAdjust="spacingAndGlyphs"` : '';
-    parts.push(`<circle cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colors[index]}"/>`);
+    parts.push(`<circle cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colors[index]}" stroke="${foreground}" stroke-opacity="0.35" stroke-width="0.7"/>`);
     parts.push(`<text x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)}</tspan></text>`);
   }
   if (!entries.length) parts.push(`<text x="20" y="80" font-size="14" fill="${secondary}">No language data in the accessible repositories.</text>`);
