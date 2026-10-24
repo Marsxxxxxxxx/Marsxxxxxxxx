@@ -813,6 +813,23 @@ export function languageColor(language) {
   return LANGUAGE_COLORS.get(language) ?? '#EDEDED';
 }
 
+export function formatBytes(bytes) {
+  if (!Number.isSafeInteger(bytes) || bytes < 0) throw new Error('Code size must be a non-negative safe integer.');
+  const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+  let value = bytes;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  // Promote values that would otherwise round to 1024.0 of the smaller unit.
+  if (unit > 0 && Math.round(value * 10) >= 10240 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return unit === 0 ? `${bytes} B` : `${value.toFixed(1)} ${units[unit]}`;
+}
+
 export function renderBarSeparators(widths, dark = false) {
   const parts = [];
   let x = PADDING;
@@ -835,9 +852,9 @@ export function renderSvg(totals, dark = false) {
   const foreground = dark ? '#f0f6fc' : '#1f2328';
   const secondary = dark ? '#9198a1' : '#59636e';
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" role="img" aria-labelledby="title description">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" data-total-bytes="${total}" role="img" aria-labelledby="title description">`,
     '<title id="title">All Languages · Usage</title>',
-    '<desc id="description">Language shares across all owned public and private repositories, weighted by code bytes. Forked and archived repositories are included.</desc>',
+    '<desc id="description">Language shares across all owned public and private repositories, weighted by code bytes. Each language shows its percentage and code size. Forked and archived repositories are included.</desc>',
     `<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">`,
     `<text x="20" y="27" fill="${foreground}" font-size="17" font-weight="600">Languages</text>`,
     `<defs><clipPath id="bar"><rect x="${PADDING}" y="43" width="${BAR_WIDTH}" height="9" rx="4.5"/></clipPath></defs>`,
@@ -850,7 +867,7 @@ export function renderSvg(totals, dark = false) {
     const [, bytes] = entries[index];
     const width = index === entries.length - 1 ? CARD_WIDTH - PADDING - x : (bytes / total) * BAR_WIDTH;
     widths.push(width);
-    parts.push(`<rect class="bar-segment" data-language="${escapeXml(entries[index][0])}" data-share="${(bytes / total).toPrecision(16)}" x="${x.toFixed(6)}" y="43" width="${width.toFixed(6)}" height="9" fill="${colors[index]}"/>`);
+    parts.push(`<rect class="bar-segment" data-language="${escapeXml(entries[index][0])}" data-share="${(bytes / total).toPrecision(16)}" data-bytes="${bytes}" x="${x.toFixed(6)}" y="43" width="${width.toFixed(6)}" height="9" fill="${colors[index]}"/>`);
     x += width;
   }
   parts.push(renderBarSeparators(widths, dark), '</g>');
@@ -859,13 +876,14 @@ export function renderSvg(totals, dark = false) {
     const [language, bytes] = entries[index];
     const percent = (bytes / total) * 100;
     const share = percent < 0.1 ? '<0.1%' : `${percent.toFixed(1)}%`;
+    const codeSize = formatBytes(bytes);
     const columnX = PADDING + (index % LEGEND_COLUMNS) * COLUMN_WIDTH;
     const y = 80 + Math.floor(index / LEGEND_COLUMNS) * 28;
-    const label = `${language}  ${share}`;
+    const label = `${language}  ${share} · ${codeSize}`;
     const labelWidth = Math.floor(COLUMN_WIDTH - 39);
     const fitted = [...label].length * 7.5 > labelWidth ? ` textLength="${labelWidth}" lengthAdjust="spacingAndGlyphs"` : '';
     parts.push(`<circle class="legend-dot" cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colors[index]}" stroke="${foreground}" stroke-opacity="0.35" stroke-width="0.7"/>`);
-    parts.push(`<text class="legend-label" x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)}</tspan></text>`);
+    parts.push(`<text class="legend-label" x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)} · ${codeSize}</tspan></text>`);
   }
   if (!entries.length) parts.push(`<text x="20" y="80" font-size="14" fill="${secondary}">No language data in the accessible repositories.</text>`);
   parts.push(`<text x="20" y="${height - 15}" font-size="12" fill="${secondary}">All Languages · Usage</text>`, '</g>', '</svg>', '');
@@ -923,7 +941,7 @@ export async function main(env = process.env) {
   await rm(resolve(directory, 'private-languages-dark.svg'), { force: true });
   await rm(resolve('.github', 'workflows', 'private-languages.yml'), { force: true });
   await rm(resolve('scripts', 'private-languages.mjs'), { force: true });
-  console.log('Updated language cards and README image versions. Only aggregate language shares were saved.');
+  console.log(`Updated language cards and README image versions from GitHub API: ${totals.size} languages, ${[...totals.values()].reduce((sum, bytes) => sum + bytes, 0)} bytes. Only aggregate shares and code sizes were saved.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
