@@ -1,6 +1,7 @@
 // Node.js 18+; no npm packages required. Keep LANGUAGE_STATS_TOKEN in an Actions Secret.
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -705,8 +706,8 @@ const LANGUAGE_COLORS = new Map(Object.entries({
   "xBase": "#403A40"
 }));
 
-const CARD_WIDTH = 840;
-const PADDING = 20;
+const CARD_WIDTH = 1140;
+const PADDING = 24;
 const CONTENT_WIDTH = CARD_WIDTH - PADDING * 2;
 const LEGEND_COLUMNS = 3;
 const COLUMN_WIDTH = CONTENT_WIDTH / LEGEND_COLUMNS;
@@ -830,63 +831,145 @@ export function formatBytes(bytes) {
   return unit === 0 ? `${bytes} B` : `${value.toFixed(1)} ${units[unit]}`;
 }
 
+function decodeXml(value) {
+  return value.replace(/&(amp|lt|gt|quot|apos);/g, (_, entity) => ({ amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" })[entity]);
+}
+
+export function parseLanguageShares(svg) {
+  const shares = new Map();
+  for (const match of svg.matchAll(/<(?:rect|path)\b[^>]*class="(?:bar|donut)-segment"[^>]*>/g)) {
+    const name = /\bdata-language="([^"]+)"/.exec(match[0]);
+    const share = /\bdata-share="([^"]+)"/.exec(match[0]);
+    if (!name || !share) return null;
+    const language = decodeXml(name[1]);
+    const value = Number(share[1]);
+    if (!language || shares.has(language) || !Number.isFinite(value) || value <= 0 || value > 1) return null;
+    shares.set(language, value);
+  }
+  const total = [...shares.values()].reduce((sum, value) => sum + value, 0);
+  return shares.size && Math.abs(total - 1) < 1e-8 ? shares : null;
+}
+
+export function percentagePointChange(current, previous) {
+  if (![current, previous].every((value) => Number.isFinite(value) && value >= 0 && value <= 1)) {
+    throw new Error('Language shares must be between zero and one.');
+  }
+  const difference = current - previous;
+  const tenths = Math.round(Math.abs(difference) * 1000 + 1e-9);
+  return tenths ? Math.sign(difference) * tenths / 10 : 0;
+}
+
+export async function load24HourBaseline({ now = new Date(), repository, ref = 'main', cwd = process.cwd(), fetchImpl = fetch } = {}) {
+  const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const tolerance = 3 * 60 * 60 * 1000;
+  const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 10_000 });
+  let records;
+  try {
+    records = git('log', '-80', `--before=${cutoff.toISOString()}`, '--format=%H%x09%cI%x09%an%x09%cn', '--', 'assets/languages.svg');
+  } catch { return null; }
+  const candidates = records.trim().split('\n').map((line) => {
+    const [commit, at, author, committer] = line.split('\t');
+    return { commit, at, author, committer, timestamp: Date.parse(at) };
+  }).filter((record) => /^[a-f0-9]{40}$/.test(record.commit) && record.timestamp <= cutoff.getTime() &&
+    record.author === 'github-actions[bot]' && record.committer === 'github-actions[bot]')
+    .sort((a, b) => b.timestamp - a.timestamp);
+  let baseline;
+  for (const record of candidates) {
+    try {
+      const shares = parseLanguageShares(git('show', `${record.commit}:assets/languages.svg`));
+      if (shares) { baseline = { shares, commit: record.commit, snapshotAt: record.at, observedAt: record.at, cutoffAt: cutoff.toISOString() }; break; }
+    } catch { /* Try the next complete successful snapshot. */ }
+  }
+  if (!baseline) return null;
+  if (cutoff.getTime() - Date.parse(baseline.snapshotAt) <= tolerance) return baseline;
+  // Unchanged results create no Git commit. A recent successful run with the same checked-out
+  // shares proves that the older snapshot was freshly observed near the 24-hour cutoff.
+  if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '')) return null;
+  try {
+    for (let page = 1; page <= 3; page += 1) {
+      const query = new URLSearchParams({ status: 'success', branch: ref, per_page: '100', page: String(page) });
+      const response = await fetchImpl(`https://api.github.com/repos/${repository}/actions/workflows/languages.yml/runs?${query}`, {
+        redirect: 'error', signal: AbortSignal.timeout(15_000),
+        headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'profile-languages-history' },
+      });
+      if (!response.ok) return null;
+      const runs = (await response.json()).workflow_runs;
+      if (!Array.isArray(runs)) return null;
+      const observations = runs.filter((run) => run.conclusion === 'success' && run.head_branch === ref &&
+        /^[a-f0-9]{40}$/.test(run.head_sha) && Date.parse(run.updated_at) <= cutoff.getTime() &&
+        cutoff.getTime() - Date.parse(run.updated_at) <= tolerance).sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+      for (const run of observations) {
+        const checkedOut = parseLanguageShares(git('show', `${run.head_sha}:assets/languages.svg`));
+        if (checkedOut?.size === baseline.shares.size && [...baseline.shares].every(([name, share]) => Math.abs((checkedOut.get(name) ?? -1) - share) < 1e-12)) {
+          return { ...baseline, observedAt: run.updated_at, runId: run.id };
+        }
+      }
+      if (runs.length < 100 || runs.some((run) => Date.parse(run.updated_at) < cutoff.getTime() - tolerance)) return null;
+    }
+  } catch { return null; }
+  return null;
+}
+
 export function renderBarSeparators(widths, dark = false) {
   const parts = [];
   let x = PADDING;
   for (let index = 0; index < widths.length; index += 1) {
     if (index > 0 && widths[index - 1] >= 6 && widths[index] >= 6) {
-      parts.push(`<path class="bar-divider" d="M${x.toFixed(6)} 43.5V51.5" stroke="${dark ? '#0d1117' : '#ffffff'}" stroke-width="1.1"/>`);
+      parts.push(`<path class="bar-divider" d="M${x.toFixed(6)} 52.6V62.4" stroke="${dark ? '#0d1117' : '#ffffff'}" stroke-width="1.2"/>`);
     }
     x += widths[index];
   }
   return parts.join('\n');
 }
 
-export function renderSvg(totals, dark = false) {
+export function renderSvg(totals, dark = false, baseline = null) {
   const entries = [...totals].filter(([, bytes]) => bytes > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   const colors = entries.map(([language]) => languageColor(language));
   const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
   if (!Number.isSafeInteger(total)) throw new Error('Total code size exceeds supported numeric precision.');
   const rows = Math.max(1, Math.ceil(entries.length / LEGEND_COLUMNS));
-  const height = 95 + rows * 28;
+  const height = 112 + rows * 34;
   const foreground = dark ? '#f0f6fc' : '#1f2328';
   const secondary = dark ? '#9198a1' : '#59636e';
+  const positive = dark ? '#3fb950' : '#1a7f37';
+  const negative = dark ? '#f85149' : '#cf222e';
+  const provenance = baseline ? ` data-baseline-commit="${escapeXml(baseline.commit)}" data-baseline-at="${escapeXml(baseline.observedAt)}"` : '';
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" data-total-bytes="${total}" role="img" aria-labelledby="title description">`,
-    '<title id="title">All Languages · Usage</title>',
-    '<desc id="description">Language shares across all owned public and private repositories, weighted by code bytes. Each language shows its percentage and code size. Forked and archived repositories are included.</desc>',
-    `<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">`,
-    `<text x="20" y="27" fill="${foreground}" font-size="17" font-weight="600">Languages</text>`,
-    `<defs><clipPath id="bar"><rect x="${PADDING}" y="43" width="${BAR_WIDTH}" height="9" rx="4.5"/></clipPath></defs>`,
-    `<rect x="${PADDING}" y="43" width="${BAR_WIDTH}" height="9" rx="4.5" fill="${dark ? '#21262d' : '#eff2f5'}"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" data-total-bytes="${total}" data-comparison-hours="24"${provenance} role="img" aria-labelledby="title description">`,
+    '<title id="title">All Languages · Usage · 24h changes</title>',
+    '<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the latest successful observation at or before 24 hours ago, within a three-hour tolerance. Forked and archived repositories are included.</desc>',
+    '<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">',
+    `<text x="24" y="33" fill="${foreground}" font-size="22" font-weight="600">Languages</text>`,
+    `<defs><clipPath id="bar"><rect x="${PADDING}" y="52" width="${BAR_WIDTH}" height="11" rx="5.5"/></clipPath></defs>`,
+    `<rect x="${PADDING}" y="52" width="${BAR_WIDTH}" height="11" rx="5.5" fill="${dark ? '#21262d' : '#eff2f5'}"/>`,
     '<g clip-path="url(#bar)">',
   ];
   let x = PADDING;
   const widths = [];
   for (let index = 0; index < entries.length; index += 1) {
-    const [, bytes] = entries[index];
+    const [language, bytes] = entries[index];
     const width = index === entries.length - 1 ? CARD_WIDTH - PADDING - x : (bytes / total) * BAR_WIDTH;
     widths.push(width);
-    parts.push(`<rect class="bar-segment" data-language="${escapeXml(entries[index][0])}" data-share="${(bytes / total).toPrecision(16)}" data-bytes="${bytes}" x="${x.toFixed(6)}" y="43" width="${width.toFixed(6)}" height="9" fill="${colors[index]}"/>`);
+    parts.push(`<rect class="bar-segment" data-language="${escapeXml(language)}" data-share="${(bytes / total).toPrecision(16)}" data-bytes="${bytes}" x="${x.toFixed(6)}" y="52" width="${width.toFixed(6)}" height="11" fill="${colors[index]}"/>`);
     x += width;
   }
   parts.push(renderBarSeparators(widths, dark), '</g>');
-  // Separators are omitted next to tiny segments, keeping every language visible.
   for (let index = 0; index < entries.length; index += 1) {
     const [language, bytes] = entries[index];
-    const percent = (bytes / total) * 100;
+    const percent = bytes / total * 100;
     const share = percent < 0.1 ? '<0.1%' : `${percent.toFixed(1)}%`;
     const codeSize = formatBytes(bytes);
     const columnX = PADDING + (index % LEGEND_COLUMNS) * COLUMN_WIDTH;
-    const y = 80 + Math.floor(index / LEGEND_COLUMNS) * 28;
-    const label = `${language}  ${share} · ${codeSize}`;
-    const labelWidth = Math.floor(COLUMN_WIDTH - 39);
-    const fitted = [...label].length * 7.5 > labelWidth ? ` textLength="${labelWidth}" lengthAdjust="spacingAndGlyphs"` : '';
-    parts.push(`<circle class="legend-dot" cx="${(columnX + 5).toFixed(3)}" cy="${y - 4}" r="5" fill="${colors[index]}" stroke="${foreground}" stroke-opacity="0.35" stroke-width="0.7"/>`);
-    parts.push(`<text class="legend-label" x="${(columnX + 19).toFixed(3)}" y="${y}" font-size="14"${fitted}><tspan fill="${foreground}" font-weight="600">${escapeXml(language)}</tspan><tspan fill="${secondary}" dx="8">${escapeXml(share)} · ${codeSize}</tspan></text>`);
+    const y = 96 + Math.floor(index / LEGEND_COLUMNS) * 34;
+    const nameFit = [...language].length * 9.1 > 100 ? ' textLength="100" lengthAdjust="spacingAndGlyphs"' : '';
+    const delta = baseline ? percentagePointChange(bytes / total, baseline.shares.get(language) ?? 0) : 0;
+    const trendLabel = `${delta > 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}%`;
+    const trendFit = [...trendLabel].length * 9 > 62 ? ' textLength="62" lengthAdjust="spacingAndGlyphs"' : '';
+    parts.push(`<circle class="legend-dot" cx="${columnX + 6}" cy="${y - 5}" r="6" fill="${colors[index]}" stroke="${foreground}" stroke-opacity="0.35" stroke-width="0.7"/>`);
+    parts.push(`<text class="legend-label" data-language="${escapeXml(language)}" data-change-pp="${delta}" x="${columnX + 22}" y="${y}" font-size="18"><tspan class="language-name" x="${columnX + 22}" fill="${foreground}" font-weight="600"${nameFit}>${escapeXml(language)}</tspan><tspan class="language-share" x="${columnX + 180}" text-anchor="end" fill="${secondary}" font-size="17">${escapeXml(share)}</tspan><tspan class="language-separator" x="${columnX + 190}" fill="${secondary}" font-size="17">·</tspan><tspan class="language-size" x="${columnX + 204}" fill="${secondary}" font-size="17">${codeSize}</tspan>${delta ? `<tspan class="language-change" x="${columnX + 298}" fill="${delta > 0 ? positive : negative}" font-size="17"${trendFit}>${trendLabel}</tspan>` : ''}</text>`);
   }
-  if (!entries.length) parts.push(`<text x="20" y="80" font-size="14" fill="${secondary}">No language data in the accessible repositories.</text>`);
-  parts.push(`<text x="20" y="${height - 15}" font-size="12" fill="${secondary}">All Languages · Usage</text>`, '</g>', '</svg>', '');
+  if (!entries.length) parts.push(`<text x="24" y="96" font-size="18" fill="${secondary}">No language data in the accessible repositories.</text>`);
+  parts.push(`<text x="24" y="${height - 18}" font-size="14" fill="${secondary}">All Languages · Usage · 24h changes</text>`, '</g>', '</svg>', '');
   return parts.join('\n');
 }
 
@@ -916,8 +999,13 @@ export function updateReadmeImages(readme, version, { repository, ref = 'main' }
 
 export async function main(env = process.env) {
   const totals = await collectLanguages({ token: env.LANGUAGE_STATS_TOKEN, owner: env.STATS_OWNER });
-  const light = renderSvg(totals);
-  const dark = renderSvg(totals, true);
+  // Historical SVGs are comparison baselines only. Current totals always come from the API above.
+  const repository = env.STATS_REPOSITORY || env.GITHUB_REPOSITORY || `${env.STATS_OWNER.trim()}/${env.STATS_OWNER.trim()}`;
+  const ref = env.STATS_REF || env.GITHUB_REF_NAME || 'main';
+  const baseline = await load24HourBaseline({ repository, ref });
+  console.log(baseline ? `24h baseline: ${baseline.observedAt}, snapshot ${baseline.commit}, target ${baseline.cutoffAt}.` : '24h baseline unavailable; change indicators are omitted.');
+  const light = renderSvg(totals, false, baseline);
+  const dark = renderSvg(totals, true, baseline);
   let readme;
   try {
     readme = await readFile(resolve('README.md'), 'utf8');
@@ -927,8 +1015,7 @@ export async function main(env = process.env) {
   // The version changes only when the displayed image changes, so unchanged runs create no commit.
   const version = createHash('sha256').update(light).update('\0').update(dark).digest('hex').slice(0, 12);
   const updatedReadme = updateReadmeImages(readme, version, {
-    repository: env.STATS_REPOSITORY || env.GITHUB_REPOSITORY || `${env.STATS_OWNER.trim()}/${env.STATS_OWNER.trim()}`,
-    ref: env.STATS_REF || env.GITHUB_REF_NAME || 'main',
+    repository, ref,
   });
   // Only aggregate SVGs and their README references are written. No raw repository data is saved.
   const directory = resolve('assets');

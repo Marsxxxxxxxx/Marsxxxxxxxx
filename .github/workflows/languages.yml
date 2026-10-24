@@ -3,7 +3,7 @@ name: Update language bar
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *' # Hourly at minute 17 (GitHub scheduling can be delayed).
+    - cron: '0 * * * *' # At the start of every hour (GitHub scheduling can be delayed).
   push:
     paths:
       - '.github/workflows/languages.yml'
@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Check out the profile repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
 
       - name: Generate language bars
         env:
