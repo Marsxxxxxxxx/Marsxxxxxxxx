@@ -859,55 +859,45 @@ export function percentagePointChange(current, previous) {
   return tenths ? Math.sign(difference) * tenths / 10 : 0;
 }
 
-export async function load24HourBaseline({ now = new Date(), repository, ref = 'main', cwd = process.cwd(), fetchImpl = fetch } = {}) {
-  const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  const tolerance = 3 * 60 * 60 * 1000;
+export async function load24HourBaseline({ now = new Date(), cwd = process.cwd() } = {}) {
+  const hour = 60 * 60 * 1000;
+  const cutoff = new Date(now.getTime() - 24 * hour);
+  const tolerance = 6 * hour;
   const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 10_000 });
   let records;
   try {
-    records = git('log', '-80', `--before=${cutoff.toISOString()}`, '--format=%H%x09%cI%x09%an%x09%cn', '--', 'assets/languages.svg');
+    // Every successful scan records its observation time, even if the language totals did not change.
+    // Keep a little extra commit-time margin; sample selection uses the actual observation time below.
+    records = git('log', '--first-parent', `--since=${new Date(cutoff.getTime() - tolerance - hour).toISOString()}`,
+      `--until=${new Date(cutoff.getTime() + tolerance + hour).toISOString()}`,
+      '--format=%H%x09%cI%x09%an%x09%cn', '--', 'assets/languages.svg');
   } catch { return null; }
   const candidates = records.trim().split('\n').map((line) => {
     const [commit, at, author, committer] = line.split('\t');
     return { commit, at, author, committer, timestamp: Date.parse(at) };
-  }).filter((record) => /^[a-f0-9]{40}$/.test(record.commit) && record.timestamp <= cutoff.getTime() &&
-    record.author === 'github-actions[bot]' && record.committer === 'github-actions[bot]')
-    .sort((a, b) => b.timestamp - a.timestamp);
-  let baseline;
+  }).filter((record) => /^[a-f0-9]{40}$/.test(record.commit) && Number.isFinite(record.timestamp) &&
+    record.author === 'github-actions[bot]' && record.committer === 'github-actions[bot]');
+  const observations = [];
   for (const record of candidates) {
     try {
-      const shares = parseLanguageShares(git('show', `${record.commit}:assets/languages.svg`));
-      if (shares) { baseline = { shares, commit: record.commit, snapshotAt: record.at, observedAt: record.at, cutoffAt: cutoff.toISOString() }; break; }
-    } catch { /* Try the next complete successful snapshot. */ }
+      const svg = git('show', `${record.commit}:assets/languages.svg`);
+      const shares = parseLanguageShares(svg);
+      if (!shares) continue;
+      const root = /<svg\b[^>]*>/.exec(svg)?.[0] ?? '';
+      // Older bot-generated SVGs predate observation timestamps; their commit time is a real saved sample.
+      const observedAt = /\bdata-observed-at="([^"]*)"/.exec(root)?.[1] ?? record.at;
+      const timestamp = Date.parse(observedAt);
+      if (!Number.isFinite(timestamp) || timestamp > record.timestamp + 60_000 || timestamp > now.getTime()) continue;
+      const offset = timestamp - cutoff.getTime();
+      if (Math.abs(offset) > tolerance) continue;
+      observations.push({ shares, commit: record.commit, snapshotAt: record.at, observedAt,
+        cutoffAt: cutoff.toISOString(), ageHours: (now.getTime() - timestamp) / hour, offsetHours: offset / hour });
+    } catch { /* A malformed or unavailable historical snapshot cannot affect current API totals. */ }
   }
-  if (!baseline) return null;
-  if (cutoff.getTime() - Date.parse(baseline.snapshotAt) <= tolerance) return baseline;
-  // Unchanged results create no Git commit. A recent successful run with the same checked-out
-  // shares proves that the older snapshot was freshly observed near the 24-hour cutoff.
-  if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '')) return null;
-  try {
-    for (let page = 1; page <= 3; page += 1) {
-      const query = new URLSearchParams({ status: 'success', branch: ref, per_page: '100', page: String(page) });
-      const response = await fetchImpl(`https://api.github.com/repos/${repository}/actions/workflows/languages.yml/runs?${query}`, {
-        redirect: 'error', signal: AbortSignal.timeout(15_000),
-        headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'profile-languages-history' },
-      });
-      if (!response.ok) return null;
-      const runs = (await response.json()).workflow_runs;
-      if (!Array.isArray(runs)) return null;
-      const observations = runs.filter((run) => run.conclusion === 'success' && run.head_branch === ref &&
-        /^[a-f0-9]{40}$/.test(run.head_sha) && Date.parse(run.updated_at) <= cutoff.getTime() &&
-        cutoff.getTime() - Date.parse(run.updated_at) <= tolerance).sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
-      for (const run of observations) {
-        const checkedOut = parseLanguageShares(git('show', `${run.head_sha}:assets/languages.svg`));
-        if (checkedOut?.size === baseline.shares.size && [...baseline.shares].every(([name, share]) => Math.abs((checkedOut.get(name) ?? -1) - share) < 1e-12)) {
-          return { ...baseline, observedAt: run.updated_at, runId: run.id };
-        }
-      }
-      if (runs.length < 100 || runs.some((run) => Date.parse(run.updated_at) < cutoff.getTime() - tolerance)) return null;
-    }
-  } catch { return null; }
-  return null;
+  // Scheduled runs can be delayed or skipped. Consider both sides of the target and prefer the older
+  // sample only when distances tie. Do not invent values or reuse arbitrarily old data to fill a gap.
+  observations.sort((a, b) => Math.abs(a.offsetHours) - Math.abs(b.offsetHours) || a.offsetHours - b.offsetHours);
+  return observations[0] ?? null;
 }
 
 export function renderBarSeparators(widths, dark = false) {
@@ -922,7 +912,8 @@ export function renderBarSeparators(widths, dark = false) {
   return parts.join('\n');
 }
 
-export function renderSvg(totals, dark = false, baseline = null) {
+export function renderSvg(totals, dark = false, baseline = null, observedAt = null) {
+  if (observedAt !== null && !Number.isFinite(Date.parse(observedAt))) throw new Error('Invalid language observation time.');
   const entries = [...totals].filter(([, bytes]) => bytes > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   const colors = entries.map(([language]) => languageColor(language));
   const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
@@ -933,11 +924,13 @@ export function renderSvg(totals, dark = false, baseline = null) {
   const secondary = dark ? '#9198a1' : '#59636e';
   const positive = dark ? '#3fb950' : '#1a7f37';
   const negative = dark ? '#f85149' : '#cf222e';
-  const provenance = baseline ? ` data-baseline-commit="${escapeXml(baseline.commit)}" data-baseline-at="${escapeXml(baseline.observedAt)}"` : '';
+  const provenance = (observedAt ? ` data-observed-at="${escapeXml(observedAt)}"` : '') +
+    (baseline ? ` data-baseline-commit="${escapeXml(baseline.commit)}" data-baseline-at="${escapeXml(baseline.observedAt)}"` : '');
+  const comparison = baseline && observedAt ? ` This image was observed at ${observedAt}; comparison snapshot: ${baseline.observedAt}, ${((Date.parse(observedAt) - Date.parse(baseline.observedAt)) / 3600000).toFixed(2)} hours earlier.` : '';
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" data-total-bytes="${total}" data-comparison-hours="24"${provenance} role="img" aria-labelledby="title description">`,
     '<title id="title">All Languages · Usage · 24h changes</title>',
-    '<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the latest successful observation at or before 24 hours ago, within a three-hour tolerance. Forked and archived repositories are included.</desc>',
+    `<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the real observation nearest to 24 hours ago, within a six-hour tolerance on either side.${escapeXml(comparison)} Forked and archived repositories are included.</desc>`,
     '<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">',
     `<text x="24" y="33" fill="${foreground}" font-size="22" font-weight="600">Languages</text>`,
     `<defs><clipPath id="bar"><rect x="${PADDING}" y="52" width="${BAR_WIDTH}" height="11" rx="5.5"/></clipPath></defs>`,
@@ -997,22 +990,29 @@ export function updateReadmeImages(readme, version, { repository, ref = 'main' }
   return updated;
 }
 
-export async function main(env = process.env) {
+export async function main(env = process.env, { now = () => new Date() } = {}) {
   const totals = await collectLanguages({ token: env.LANGUAGE_STATS_TOKEN, owner: env.STATS_OWNER });
   // Historical SVGs are comparison baselines only. Current totals always come from the API above.
   const repository = env.STATS_REPOSITORY || env.GITHUB_REPOSITORY || `${env.STATS_OWNER.trim()}/${env.STATS_OWNER.trim()}`;
   const ref = env.STATS_REF || env.GITHUB_REF_NAME || 'main';
-  const baseline = await load24HourBaseline({ repository, ref });
-  console.log(baseline ? `24h baseline: ${baseline.observedAt}, snapshot ${baseline.commit}, target ${baseline.cutoffAt}.` : '24h baseline unavailable; change indicators are omitted.');
-  const light = renderSvg(totals, false, baseline);
-  const dark = renderSvg(totals, true, baseline);
+  const observedAt = now();
+  const baseline = await load24HourBaseline({ now: observedAt });
+  console.log(baseline ? `24h baseline: ${baseline.observedAt}, snapshot ${baseline.commit}, target ${baseline.cutoffAt}, actual interval ${baseline.ageHours.toFixed(2)}h.` : '24h baseline unavailable: no valid saved observation within 6h of the 24h target; change indicators are omitted.');
+  if (baseline) {
+    const total = [...totals.values()].reduce((sum, bytes) => sum + bytes, 0);
+    const changed = [...totals].filter(([language, bytes]) => percentagePointChange(bytes / total, baseline.shares.get(language) ?? 0) !== 0).length;
+    console.log(`24h changes: ${changed} languages have a non-zero difference after rounding to 0.1 percentage point; unchanged indicators are omitted.`);
+  }
+  const light = renderSvg(totals, false, baseline, observedAt.toISOString());
+  const dark = renderSvg(totals, true, baseline, observedAt.toISOString());
   let readme;
   try {
     readme = await readFile(resolve('README.md'), 'utf8');
   } catch {
     throw new Error('Cannot read README.md. Add the supplied picture block to the profile README first.');
   }
-  // The version changes only when the displayed image changes, so unchanged runs create no commit.
+  // The observation timestamp intentionally persists every successful scan, including unchanged totals.
+  // Both theme URLs share the version of these exact generated files.
   const version = createHash('sha256').update(light).update('\0').update(dark).digest('hex').slice(0, 12);
   const updatedReadme = updateReadmeImages(readme, version, {
     repository, ref,
