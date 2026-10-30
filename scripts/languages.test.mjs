@@ -75,12 +75,14 @@ test('up/down changes use percentage points and hide only rounded zero changes',
   assert.equal(percentagePointChange(.21104, .211), 0);
   assert.equal(parseLanguageShares('<svg/>'), null);
   const totals = new Map([['C#', 233], ['Rust', 100], ['QML', 667]]);
-  const baseline = {commit: 'a'.repeat(40), observedAt: '2026-01-02T12:00:00Z', shares: new Map([['C#', .211], ['Rust', .122], ['QML', .667]])};
+  const baseline = {commit: 'a'.repeat(40), observedAt: '2025-12-30T20:07:09.123Z', shares: new Map([['C#', .211], ['Rust', .122], ['QML', .667]])};
   for (const dark of [false, true]) {
-    const svg = renderSvg(totals, dark, baseline, '2026-01-03T12:00:00Z');
+    const svg = renderSvg(totals, dark, baseline, '2025-12-31T20:07:09.123Z');
     assert.equal((svg.match(/class="language-change"/g) ?? []).length, 2);
     assert.ok(svg.includes('▲ 2.2%') && svg.includes('▼ 2.2%'));
     assert.ok(svg.includes('24.00 hours earlier'));
+    assert.ok(svg.includes('All Languages · Usage · 2026-01-01 04:07:09 UTC+8'));
+    assert.ok(!svg.includes('24h changes'));
   }
 });
 

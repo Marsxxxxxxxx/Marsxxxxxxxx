@@ -914,6 +914,9 @@ export function renderBarSeparators(widths, dark = false) {
 
 export function renderSvg(totals, dark = false, baseline = null, observedAt = null) {
   if (observedAt !== null && !Number.isFinite(Date.parse(observedAt))) throw new Error('Invalid language observation time.');
+  // Format the timestamp in fixed UTC+8, regardless of the runner's local timezone.
+  const generatedTime = observedAt === null ? null : new Date(Date.parse(observedAt) + 8 * 3600000).toISOString().slice(0, 19).replace('T', ' ');
+  const caption = `All Languages · Usage${generatedTime ? ` · ${generatedTime} UTC+8` : ''}`;
   const entries = [...totals].filter(([, bytes]) => bytes > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   const colors = entries.map(([language]) => languageColor(language));
   const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
@@ -929,7 +932,7 @@ export function renderSvg(totals, dark = false, baseline = null, observedAt = nu
   const comparison = baseline && observedAt ? ` This image was observed at ${observedAt}; comparison snapshot: ${baseline.observedAt}, ${((Date.parse(observedAt) - Date.parse(baseline.observedAt)) / 3600000).toFixed(2)} hours earlier.` : '';
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${height}" viewBox="0 0 ${CARD_WIDTH} ${height}" data-total-bytes="${total}" data-comparison-hours="24"${provenance} role="img" aria-labelledby="title description">`,
-    '<title id="title">All Languages · Usage · 24h changes</title>',
+    `<title id="title">${escapeXml(caption)}</title>`,
     `<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the real observation nearest to 24 hours ago, within a six-hour tolerance on either side.${escapeXml(comparison)} Forked and archived repositories are included.</desc>`,
     '<g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">',
     `<text x="24" y="33" fill="${foreground}" font-size="22" font-weight="600">Languages</text>`,
@@ -962,7 +965,7 @@ export function renderSvg(totals, dark = false, baseline = null, observedAt = nu
     parts.push(`<text class="legend-label" data-language="${escapeXml(language)}" data-change-pp="${delta}" x="${columnX + 22}" y="${y}" font-size="18"><tspan class="language-name" x="${columnX + 22}" fill="${foreground}" font-weight="600"${nameFit}>${escapeXml(language)}</tspan><tspan class="language-share" x="${columnX + 180}" text-anchor="end" fill="${secondary}" font-size="17">${escapeXml(share)}</tspan><tspan class="language-separator" x="${columnX + 190}" fill="${secondary}" font-size="17">·</tspan><tspan class="language-size" x="${columnX + 204}" fill="${secondary}" font-size="17">${codeSize}</tspan>${delta ? `<tspan class="language-change" x="${columnX + 298}" fill="${delta > 0 ? positive : negative}" font-size="17"${trendFit}>${trendLabel}</tspan>` : ''}</text>`);
   }
   if (!entries.length) parts.push(`<text x="24" y="96" font-size="18" fill="${secondary}">No language data in the accessible repositories.</text>`);
-  parts.push(`<text x="24" y="${height - 18}" font-size="14" fill="${secondary}">All Languages · Usage · 24h changes</text>`, '</g>', '</svg>', '');
+  parts.push(`<text x="24" y="${height - 18}" font-size="14" fill="${secondary}">${escapeXml(caption)}</text>`, '</g>', '</svg>', '');
   return parts.join('\n');
 }
 
