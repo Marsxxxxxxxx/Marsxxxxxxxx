@@ -1,6 +1,5 @@
 // Node.js 18+; no npm packages required. Keep LANGUAGE_STATS_TOKEN in an Actions Secret.
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -969,7 +968,7 @@ export function renderSvg(totals, dark = false, baseline = null, observedAt = nu
   return parts.join('\n');
 }
 
-export function updateReadmeImages(readme, version, { repository, ref = 'main' } = {}) {
+export function updateReadmeImages(readme, { repository, ref = 'main' } = {}) {
   if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '')) {
     throw new Error('STATS_REPOSITORY must contain the profile repository in owner/name format.');
   }
@@ -981,10 +980,11 @@ export function updateReadmeImages(readme, version, { repository, ref = 'main' }
     (_, theme = '', query = '') => {
       references += 1;
       const parameters = new URLSearchParams(query.replaceAll('&amp;', '&'));
-      parameters.set('v', version);
+      parameters.delete('v');
       const suffix = parameters.toString();
-      // Relative GitHub /raw/ redirects drop query parameters, defeating image cache versions.
-      return `${imageBase}languages${theme}.svg?${query.includes('&amp;') ? suffix.replaceAll('&', '&amp;') : suffix}`;
+      // Use a fixed direct URL. Remove legacy version keys while preserving unrelated parameters.
+      const search = suffix ? `?${query.includes('&amp;') ? suffix.replaceAll('&', '&amp;') : suffix}` : '';
+      return `${imageBase}languages${theme}.svg${search}`;
     },
   );
   if (!references) {
@@ -1014,10 +1014,8 @@ export async function main(env = process.env, { now = () => new Date() } = {}) {
   } catch {
     throw new Error('Cannot read README.md. Add the supplied picture block to the profile README first.');
   }
-  // The observation timestamp intentionally persists every successful scan, including unchanged totals.
-  // Both theme URLs share the version of these exact generated files.
-  const version = createHash('sha256').update(light).update('\0').update(dark).digest('hex').slice(0, 12);
-  const updatedReadme = updateReadmeImages(readme, version, {
+  // Normalize old links once; subsequent scans keep the README's fixed image URLs unchanged.
+  const updatedReadme = updateReadmeImages(readme, {
     repository, ref,
   });
   // Only aggregate SVGs and their README references are written. No raw repository data is saved.
@@ -1031,7 +1029,7 @@ export async function main(env = process.env, { now = () => new Date() } = {}) {
   await rm(resolve(directory, 'private-languages-dark.svg'), { force: true });
   await rm(resolve('.github', 'workflows', 'private-languages.yml'), { force: true });
   await rm(resolve('scripts', 'private-languages.mjs'), { force: true });
-  console.log(`Updated language cards and README image versions from GitHub API: ${totals.size} languages, ${[...totals.values()].reduce((sum, bytes) => sum + bytes, 0)} bytes. Only aggregate shares and code sizes were saved.`);
+  console.log(`Updated language cards from GitHub API: ${totals.size} languages, ${[...totals.values()].reduce((sum, bytes) => sum + bytes, 0)} bytes. README image URLs are fixed; only aggregate shares and code sizes were saved.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

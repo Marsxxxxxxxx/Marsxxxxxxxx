@@ -91,7 +91,7 @@ test('main records a fresh timestamp after every successful scan and preserves o
   const originalDirectory = process.cwd();
   const originalFetch = globalThis.fetch;
   const reply = (data, status = 200) => ({ok: status === 200, status, json: async () => data});
-  await writeFile(join(history.cwd, 'README.md'), '<img src="./assets/languages.svg">');
+  await writeFile(join(history.cwd, 'README.md'), '<img src="./assets/languages.svg?v=old">');
   let failure = false;
   try {
     process.chdir(history.cwd);
@@ -103,11 +103,14 @@ test('main records a fresh timestamp after every successful scan and preserves o
     const env = {LANGUAGE_STATS_TOKEN: 'fixture-only', STATS_OWNER: 'ExampleUser', STATS_REPOSITORY: 'ExampleUser/profile'};
     await main(env, {now: () => new Date('2026-01-03T12:00:00Z')});
     const first = await readFile('assets/languages.svg', 'utf8');
+    const fixedReadme = await readFile('README.md', 'utf8');
+    assert.equal(fixedReadme, '<img src="https://raw.githubusercontent.com/ExampleUser/profile/main/assets/languages.svg">');
     await main(env, {now: () => new Date('2026-01-03T13:00:00Z')});
     const second = await readFile('assets/languages.svg', 'utf8');
     assert.notEqual(second, first);
     assert.deepEqual(parseLanguageShares(second), parseLanguageShares(first));
     assert.ok(second.includes('data-observed-at="2026-01-03T13:00:00.000Z"'));
+    assert.equal(await readFile('README.md', 'utf8'), fixedReadme);
     failure = true;
     await assert.rejects(main(env), /Metadata: Read/);
     assert.equal(await readFile('assets/languages.svg', 'utf8'), second);
