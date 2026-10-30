@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="316" viewBox="0 0 1140 316" data-total-bytes="8841371" data-comparison-hours="24" data-observed-at="2026-10-30T04:59:38.275Z" data-baseline-commit="45d691cceb5d8e405ab957eee77374879f5241c5" data-baseline-at="2026-10-29T06:53:41.365Z" role="img" aria-labelledby="title description">
-<title id="title">All Languages · Usage · 2026-10-30 12:59:38 UTC+8</title>
-<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the real observation nearest to 24 hours ago, within a six-hour tolerance on either side. This image was observed at 2026-10-30T04:59:38.275Z; comparison snapshot: 2026-10-29T06:53:41.365Z, 22.10 hours earlier. Forked and archived repositories are included.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="316" viewBox="0 0 1140 316" data-total-bytes="8841371" data-comparison-hours="24" data-observed-at="2026-10-30T06:56:40.953Z" data-baseline-commit="45d691cceb5d8e405ab957eee77374879f5241c5" data-baseline-at="2026-10-29T06:53:41.365Z" role="img" aria-labelledby="title description">
+<title id="title">All Languages · Usage · 2026-10-30 14:56:40 UTC+8</title>
+<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the real observation nearest to 24 hours ago, within a six-hour tolerance on either side. This image was observed at 2026-10-30T06:56:40.953Z; comparison snapshot: 2026-10-29T06:53:41.365Z, 24.05 hours earlier. Forked and archived repositories are included.</desc>
 <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">
 <text x="24" y="33" fill="#1f2328" font-size="22" font-weight="600">Languages</text>
 <defs><clipPath id="bar"><rect x="24" y="52" width="1092" height="11" rx="5.5"/></clipPath></defs>
@@ -71,6 +71,6 @@
 <text class="legend-label" data-language="HLSL" data-change-pp="0" x="46" y="266" font-size="18"><tspan class="language-name" x="46" fill="#1f2328" font-weight="600">HLSL</tspan><tspan class="language-share" x="204" text-anchor="end" fill="#59636e" font-size="17">&lt;0.1%</tspan><tspan class="language-separator" x="214" fill="#59636e" font-size="17">·</tspan><tspan class="language-size" x="228" fill="#59636e" font-size="17">6.8 KiB</tspan></text>
 <circle class="legend-dot" cx="394" cy="261" r="6" fill="#C1F12E" stroke="#1f2328" stroke-opacity="0.35" stroke-width="0.7"/>
 <text class="legend-label" data-language="Batchfile" data-change-pp="0" x="410" y="266" font-size="18"><tspan class="language-name" x="410" fill="#1f2328" font-weight="600">Batchfile</tspan><tspan class="language-share" x="568" text-anchor="end" fill="#59636e" font-size="17">&lt;0.1%</tspan><tspan class="language-separator" x="578" fill="#59636e" font-size="17">·</tspan><tspan class="language-size" x="592" fill="#59636e" font-size="17">4.3 KiB</tspan></text>
-<text x="24" y="298" font-size="14" fill="#59636e">All Languages · Usage · 2026-10-30 12:59:38 UTC+8</text>
+<text x="24" y="298" font-size="14" fill="#59636e">All Languages · Usage · 2026-10-30 14:56:40 UTC+8</text>
 </g>
 </svg>
