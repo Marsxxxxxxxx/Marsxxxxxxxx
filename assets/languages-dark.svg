@@ -1,54 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="418" viewBox="0 0 1140 418" data-total-bytes="58952018" data-comparison-hours="24" data-observed-at="2026-11-07T16:14:26.048Z" data-baseline-commit="2e11c45b172fb981e79a4ad701e7078e5c30db2e" data-baseline-at="2026-11-06T17:18:54.175Z" role="img" aria-labelledby="title description">
-<title id="title">All Languages · Usage · 2026-11-08 00:14:26 UTC+8</title>
-<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the real observation nearest to 24 hours ago, within a six-hour tolerance on either side. This image was observed at 2026-11-07T16:14:26.048Z; comparison snapshot: 2026-11-06T17:18:54.175Z, 22.93 hours earlier. Forked and archived repositories are included.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="418" viewBox="0 0 1140 418" data-total-bytes="58978018" data-comparison-hours="24" data-observed-at="2026-11-07T20:45:08.046Z" data-baseline-commit="678ee8e2a79aac8ec124ceead3c2cdf7153ef34b" data-baseline-at="2026-11-06T22:56:24.573Z" role="img" aria-labelledby="title description">
+<title id="title">All Languages · Usage · 2026-11-08 04:45:08 UTC+8</title>
+<desc id="description">Language shares and code sizes across all owned public and private repositories. Changes are percentage-point differences from the real observation nearest to 24 hours ago, within a six-hour tolerance on either side. This image was observed at 2026-11-07T20:45:08.046Z; comparison snapshot: 2026-11-06T22:56:24.573Z, 21.81 hours earlier. Forked and archived repositories are included.</desc>
 <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif">
 <text x="24" y="33" fill="#f0f6fc" font-size="22" font-weight="600">Languages</text>
 <defs><clipPath id="bar"><rect x="24" y="52" width="1092" height="11" rx="5.5"/></clipPath></defs>
 <rect x="24" y="52" width="1092" height="11" rx="5.5" fill="#21262d"/>
 <g clip-path="url(#bar)">
-<rect class="bar-segment" data-language="SVG" data-share="0.6875712719452624" data-bytes="40533714" x="24.000000" y="52" width="750.827829" height="11" fill="#FF9900"/>
-<rect class="bar-segment" data-language="JSON" data-share="0.05843876285965308" data-bytes="3445083" x="774.827829" y="52" width="63.815129" height="11" fill="#292929"/>
-<rect class="bar-segment" data-language="QML" data-share="0.04290094021887427" data-bytes="2529097" x="838.642958" y="52" width="46.847827" height="11" fill="#44A51C"/>
-<rect class="bar-segment" data-language="JavaScript" data-share="0.03217715125544982" data-bytes="1896908" x="885.490785" y="52" width="35.137449" height="11" fill="#F1E05A"/>
-<rect class="bar-segment" data-language="Java" data-share="0.02809099766525380" data-bytes="1656021" x="920.628234" y="52" width="30.675369" height="11" fill="#B07219"/>
-<rect class="bar-segment" data-language="Rust" data-share="0.02635506048325606" data-bytes="1553684" x="951.303603" y="52" width="28.779726" height="11" fill="#DEA584"/>
-<rect class="bar-segment" data-language="C#" data-share="0.02281701366016003" data-bytes="1345109" x="980.083329" y="52" width="24.916179" height="11" fill="#7355DD"/>
-<rect class="bar-segment" data-language="C" data-share="0.02082340930212092" data-bytes="1227582" x="1004.999508" y="52" width="22.739163" height="11" fill="#555555"/>
-<rect class="bar-segment" data-language="C++" data-share="0.01939139725462833" data-bytes="1143162" x="1027.738671" y="52" width="21.175406" height="11" fill="#F34B7D"/>
-<rect class="bar-segment" data-language="Markdown" data-share="0.01636079701291990" data-bytes="964502" x="1048.914077" y="52" width="17.865990" height="11" fill="#083FA1"/>
-<rect class="bar-segment" data-language="Python" data-share="0.01323788440965668" data-bytes="780400" x="1066.780067" y="52" width="14.455770" height="11" fill="#3572A5"/>
-<rect class="bar-segment" data-language="TypeScript" data-share="0.007144403436706781" data-bytes="421177" x="1081.235837" y="52" width="7.801689" height="11" fill="#3178C6"/>
-<rect class="bar-segment" data-language="PowerShell" data-share="0.007093819926571470" data-bytes="418195" x="1089.037526" y="52" width="7.746451" height="11" fill="#012456"/>
-<rect class="bar-segment" data-language="HTML" data-share="0.003792033039479666" data-bytes="223548" x="1096.783977" y="52" width="4.140900" height="11" fill="#E34C26"/>
-<rect class="bar-segment" data-language="Text" data-share="0.002816035915852787" data-bytes="166011" x="1100.924877" y="52" width="3.075111" height="11" fill="#EDEDED"/>
-<rect class="bar-segment" data-language="TSV" data-share="0.002700060242212574" data-bytes="159174" x="1103.999988" y="52" width="2.948466" height="11" fill="#237346"/>
-<rect class="bar-segment" data-language="XML" data-share="0.002372556610360650" data-bytes="139867" x="1106.948454" y="52" width="2.590832" height="11" fill="#0060AC"/>
-<rect class="bar-segment" data-language="Ignore List" data-share="0.001952214765574267" data-bytes="115087" x="1109.539286" y="52" width="2.131819" height="11" fill="#000000"/>
-<rect class="bar-segment" data-language="CSS" data-share="0.001753968795436316" data-bytes="103400" x="1111.671105" y="52" width="1.915334" height="11" fill="#663399"/>
-<rect class="bar-segment" data-language="Lua" data-share="0.001436524191589167" data-bytes="84686" x="1113.586438" y="52" width="1.568684" height="11" fill="#000080"/>
-<rect class="bar-segment" data-language="INI" data-share="0.0003234155614486344" data-bytes="19066" x="1115.155123" y="52" width="0.353170" height="11" fill="#D1DBE0"/>
-<rect class="bar-segment" data-language="CMake" data-share="0.0002495249611302534" data-bytes="14710" x="1115.508293" y="52" width="0.272481" height="11" fill="#DA3434"/>
-<rect class="bar-segment" data-language="HLSL" data-share="0.0001178585608384093" data-bytes="6948" x="1115.780774" y="52" width="0.128702" height="11" fill="#AACE60"/>
-<rect class="bar-segment" data-language="Batchfile" data-share="0.00007382274852745498" data-bytes="4352" x="1115.909475" y="52" width="0.080614" height="11" fill="#C1F12E"/>
-<rect class="bar-segment" data-language="Git Attributes" data-share="0.000004800514208012353" data-bytes="283" x="1115.990090" y="52" width="0.005242" height="11" fill="#F44D27"/>
-<rect class="bar-segment" data-language="YAML" data-share="0.000004274662828336088" data-bytes="252" x="1115.995332" y="52" width="0.004668" height="11" fill="#CB171E"/>
-<path class="bar-divider" d="M774.827829 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M838.642958 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M885.490785 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M920.628234 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M951.303603 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M980.083329 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M1004.999508 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M1027.738671 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M1048.914077 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M1066.780067 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M1081.235837 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
-<path class="bar-divider" d="M1089.037526 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<rect class="bar-segment" data-language="SVG" data-share="0.6872681615038335" data-bytes="40533714" x="24.000000" y="52" width="750.496832" height="11" fill="#FF9900"/>
+<rect class="bar-segment" data-language="JSON" data-share="0.05862416400632520" data-bytes="3457537" x="774.496832" y="52" width="64.017587" height="11" fill="#292929"/>
+<rect class="bar-segment" data-language="QML" data-share="0.04288202767342911" data-bytes="2529097" x="838.514419" y="52" width="46.827174" height="11" fill="#44A51C"/>
+<rect class="bar-segment" data-language="JavaScript" data-share="0.03235073108085795" data-bytes="1907982" x="885.341594" y="52" width="35.326998" height="11" fill="#F1E05A"/>
+<rect class="bar-segment" data-language="Java" data-share="0.02811706897305366" data-bytes="1658289" x="920.668592" y="52" width="30.703839" height="11" fill="#B07219"/>
+<rect class="bar-segment" data-language="Rust" data-share="0.02634344206005702" data-bytes="1553684" x="951.372431" y="52" width="28.767039" height="11" fill="#DEA584"/>
+<rect class="bar-segment" data-language="C#" data-share="0.02280695495735377" data-bytes="1345109" x="980.139470" y="52" width="24.905195" height="11" fill="#7355DD"/>
+<rect class="bar-segment" data-language="C" data-share="0.02081422946427260" data-bytes="1227582" x="1005.044665" y="52" width="22.729139" height="11" fill="#555555"/>
+<rect class="bar-segment" data-language="C++" data-share="0.01938284870814072" data-bytes="1143162" x="1027.773803" y="52" width="21.166071" height="11" fill="#F34B7D"/>
+<rect class="bar-segment" data-language="Markdown" data-share="0.01635704339877952" data-bytes="964706" x="1048.939874" y="52" width="17.861891" height="11" fill="#083FA1"/>
+<rect class="bar-segment" data-language="Python" data-share="0.01323204859139213" data-bytes="780400" x="1066.801766" y="52" width="14.449397" height="11" fill="#3572A5"/>
+<rect class="bar-segment" data-language="TypeScript" data-share="0.007141253882081965" data-bytes="421177" x="1081.251163" y="52" width="7.798249" height="11" fill="#3178C6"/>
+<rect class="bar-segment" data-language="PowerShell" data-share="0.007090692671293227" data-bytes="418195" x="1089.049412" y="52" width="7.743036" height="11" fill="#012456"/>
+<rect class="bar-segment" data-language="HTML" data-share="0.003790361351241067" data-bytes="223548" x="1096.792448" y="52" width="4.139075" height="11" fill="#E34C26"/>
+<rect class="bar-segment" data-language="Text" data-share="0.002814794488346488" data-bytes="166011" x="1100.931523" y="52" width="3.073756" height="11" fill="#EDEDED"/>
+<rect class="bar-segment" data-language="TSV" data-share="0.002698869941678949" data-bytes="159174" x="1104.005279" y="52" width="2.947166" height="11" fill="#237346"/>
+<rect class="bar-segment" data-language="XML" data-share="0.002371510687253003" data-bytes="139867" x="1106.952444" y="52" width="2.589690" height="11" fill="#0060AC"/>
+<rect class="bar-segment" data-language="Ignore List" data-share="0.001951354146895882" data-bytes="115087" x="1109.542134" y="52" width="2.130879" height="11" fill="#000000"/>
+<rect class="bar-segment" data-language="CSS" data-share="0.001753195571950214" data-bytes="103400" x="1111.673013" y="52" width="1.914490" height="11" fill="#663399"/>
+<rect class="bar-segment" data-language="Lua" data-share="0.001435890911084872" data-bytes="84686" x="1113.587502" y="52" width="1.567993" height="11" fill="#000080"/>
+<rect class="bar-segment" data-language="INI" data-share="0.0003232729862166613" data-bytes="19066" x="1115.155495" y="52" width="0.353014" height="11" fill="#D1DBE0"/>
+<rect class="bar-segment" data-language="CMake" data-share="0.0002494149599940778" data-bytes="14710" x="1115.508509" y="52" width="0.272361" height="11" fill="#DA3434"/>
+<rect class="bar-segment" data-language="HLSL" data-share="0.0001178066038095753" data-bytes="6948" x="1115.780871" y="52" width="0.128645" height="11" fill="#AACE60"/>
+<rect class="bar-segment" data-language="Batchfile" data-share="0.00007379020434359120" data-bytes="4352" x="1115.909515" y="52" width="0.080579" height="11" fill="#C1F12E"/>
+<rect class="bar-segment" data-language="Git Attributes" data-share="0.000004798397938703196" data-bytes="283" x="1115.990094" y="52" width="0.005240" height="11" fill="#F44D27"/>
+<rect class="bar-segment" data-language="YAML" data-share="0.000004272778376513093" data-bytes="252" x="1115.995334" y="52" width="0.004666" height="11" fill="#CB171E"/>
+<path class="bar-divider" d="M774.496832 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M838.514419 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M885.341594 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M920.668592 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M951.372431 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M980.139470 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M1005.044665 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M1027.773803 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M1048.939874 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M1066.801766 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M1081.251163 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
+<path class="bar-divider" d="M1089.049412 52.6V62.4" stroke="#0d1117" stroke-width="1.2"/>
 </g>
 <circle class="legend-dot" cx="30" cy="91" r="6" fill="#FF9900" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
-<text class="legend-label" data-language="SVG" data-change-pp="0" x="46" y="96" font-size="18"><tspan class="language-name" x="46" fill="#f0f6fc" font-weight="600">SVG</tspan><tspan class="language-share" x="204" text-anchor="end" fill="#9198a1" font-size="17">68.8%</tspan><tspan class="language-separator" x="214" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="228" fill="#9198a1" font-size="17">38.7 MiB</tspan></text>
+<text class="legend-label" data-language="SVG" data-change-pp="0" x="46" y="96" font-size="18"><tspan class="language-name" x="46" fill="#f0f6fc" font-weight="600">SVG</tspan><tspan class="language-share" x="204" text-anchor="end" fill="#9198a1" font-size="17">68.7%</tspan><tspan class="language-separator" x="214" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="228" fill="#9198a1" font-size="17">38.7 MiB</tspan></text>
 <circle class="legend-dot" cx="394" cy="91" r="6" fill="#292929" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
-<text class="legend-label" data-language="JSON" data-change-pp="0" x="410" y="96" font-size="18"><tspan class="language-name" x="410" fill="#f0f6fc" font-weight="600">JSON</tspan><tspan class="language-share" x="568" text-anchor="end" fill="#9198a1" font-size="17">5.8%</tspan><tspan class="language-separator" x="578" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="592" fill="#9198a1" font-size="17">3.3 MiB</tspan></text>
+<text class="legend-label" data-language="JSON" data-change-pp="0" x="410" y="96" font-size="18"><tspan class="language-name" x="410" fill="#f0f6fc" font-weight="600">JSON</tspan><tspan class="language-share" x="568" text-anchor="end" fill="#9198a1" font-size="17">5.9%</tspan><tspan class="language-separator" x="578" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="592" fill="#9198a1" font-size="17">3.3 MiB</tspan></text>
 <circle class="legend-dot" cx="758" cy="91" r="6" fill="#44A51C" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
 <text class="legend-label" data-language="QML" data-change-pp="0" x="774" y="96" font-size="18"><tspan class="language-name" x="774" fill="#f0f6fc" font-weight="600">QML</tspan><tspan class="language-share" x="932" text-anchor="end" fill="#9198a1" font-size="17">4.3%</tspan><tspan class="language-separator" x="942" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="956" fill="#9198a1" font-size="17">2.4 MiB</tspan></text>
 <circle class="legend-dot" cx="30" cy="125" r="6" fill="#F1E05A" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
@@ -64,7 +64,7 @@
 <circle class="legend-dot" cx="758" cy="159" r="6" fill="#F34B7D" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
 <text class="legend-label" data-language="C++" data-change-pp="0" x="774" y="164" font-size="18"><tspan class="language-name" x="774" fill="#f0f6fc" font-weight="600">C++</tspan><tspan class="language-share" x="932" text-anchor="end" fill="#9198a1" font-size="17">1.9%</tspan><tspan class="language-separator" x="942" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="956" fill="#9198a1" font-size="17">1.1 MiB</tspan></text>
 <circle class="legend-dot" cx="30" cy="193" r="6" fill="#083FA1" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
-<text class="legend-label" data-language="Markdown" data-change-pp="0" x="46" y="198" font-size="18"><tspan class="language-name" x="46" fill="#f0f6fc" font-weight="600">Markdown</tspan><tspan class="language-share" x="204" text-anchor="end" fill="#9198a1" font-size="17">1.6%</tspan><tspan class="language-separator" x="214" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="228" fill="#9198a1" font-size="17">941.9 KiB</tspan></text>
+<text class="legend-label" data-language="Markdown" data-change-pp="0" x="46" y="198" font-size="18"><tspan class="language-name" x="46" fill="#f0f6fc" font-weight="600">Markdown</tspan><tspan class="language-share" x="204" text-anchor="end" fill="#9198a1" font-size="17">1.6%</tspan><tspan class="language-separator" x="214" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="228" fill="#9198a1" font-size="17">942.1 KiB</tspan></text>
 <circle class="legend-dot" cx="394" cy="193" r="6" fill="#3572A5" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
 <text class="legend-label" data-language="Python" data-change-pp="0" x="410" y="198" font-size="18"><tspan class="language-name" x="410" fill="#f0f6fc" font-weight="600">Python</tspan><tspan class="language-share" x="568" text-anchor="end" fill="#9198a1" font-size="17">1.3%</tspan><tspan class="language-separator" x="578" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="592" fill="#9198a1" font-size="17">762.1 KiB</tspan></text>
 <circle class="legend-dot" cx="758" cy="193" r="6" fill="#3178C6" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
@@ -97,6 +97,6 @@
 <text class="legend-label" data-language="Git Attributes" data-change-pp="0" x="46" y="368" font-size="18"><tspan class="language-name" x="46" fill="#f0f6fc" font-weight="600" textLength="100" lengthAdjust="spacingAndGlyphs">Git Attributes</tspan><tspan class="language-share" x="204" text-anchor="end" fill="#9198a1" font-size="17">&lt;0.1%</tspan><tspan class="language-separator" x="214" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="228" fill="#9198a1" font-size="17">283 B</tspan></text>
 <circle class="legend-dot" cx="394" cy="363" r="6" fill="#CB171E" stroke="#f0f6fc" stroke-opacity="0.35" stroke-width="0.7"/>
 <text class="legend-label" data-language="YAML" data-change-pp="0" x="410" y="368" font-size="18"><tspan class="language-name" x="410" fill="#f0f6fc" font-weight="600">YAML</tspan><tspan class="language-share" x="568" text-anchor="end" fill="#9198a1" font-size="17">&lt;0.1%</tspan><tspan class="language-separator" x="578" fill="#9198a1" font-size="17">·</tspan><tspan class="language-size" x="592" fill="#9198a1" font-size="17">252 B</tspan></text>
-<text x="24" y="400" font-size="14" fill="#9198a1">All Languages · Usage · 2026-11-08 00:14:26 UTC+8</text>
+<text x="24" y="400" font-size="14" fill="#9198a1">All Languages · Usage · 2026-11-08 04:45:08 UTC+8</text>
 </g>
 </svg>
